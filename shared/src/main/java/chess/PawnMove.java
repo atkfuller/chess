@@ -25,19 +25,26 @@ public class PawnMove implements MovesCalculator{
     }
     private Collection<ChessMove> moveByColor(ChessBoard board, ChessPosition myPosition, int startRow,int endRow, int rowIncr) {
         ChessPiece myPiece=board.getPiece(myPosition);
+        ChessPiece.PieceType type= null;
         Collection<ChessMove> moves=new ArrayList<ChessMove>();
         int row=myPosition.getRow()+rowIncr;
         int col=myPosition.getColumn();
         ChessPosition newPosition= new ChessPosition(row,col);
         if(!board.outOfBoard(newPosition)){
             if(board.getPiece(newPosition)==null){
-                ChessMove move = new ChessMove(myPosition, newPosition, null);
+                if(newPosition.getRow()==endRow) {
+                    type= ChessPiece.PieceType.QUEEN;
+                }
+                ChessMove move = new ChessMove(myPosition, newPosition, type);
                 moves.add(move);
             }
             if(myPosition.getRow()==startRow){
                 row=row+rowIncr;;
                 newPosition= new ChessPosition(row,col);
                 if(!board.outOfBoard(newPosition)&& board.getPiece(newPosition)==null){
+                    if(newPosition.getRow()==endRow) {
+                        type= ChessPiece.PieceType.QUEEN;
+                    }
                     ChessMove move=new ChessMove(myPosition, newPosition, null);
                     moves.add(move);
                 }
@@ -47,6 +54,9 @@ public class PawnMove implements MovesCalculator{
         col=col-1;
         newPosition= new ChessPosition(row,col);
         if(!board.outOfBoard(newPosition)&& board.getPiece(newPosition)!=null&& board.getPiece(newPosition).getTeamColor()!=myPiece.getTeamColor()){
+            if(newPosition.getRow()==endRow) {
+                type= ChessPiece.PieceType.QUEEN;
+            }
             ChessMove move=new ChessMove(myPosition, newPosition, null);
             moves.add(move);
         }
@@ -54,6 +64,9 @@ public class PawnMove implements MovesCalculator{
         col=col+1;
         newPosition= new ChessPosition(row,col);
         if(!board.outOfBoard(newPosition)&& board.getPiece(newPosition)!=null&&  board.getPiece(newPosition).getTeamColor()!=myPiece.getTeamColor()){
+            if(newPosition.getRow()==endRow) {
+                type= ChessPiece.PieceType.QUEEN;
+            }
             ChessMove move=new ChessMove(myPosition, newPosition, null);
             moves.add(move);
         }
