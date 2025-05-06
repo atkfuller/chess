@@ -45,29 +45,29 @@ public class PawnMove implements MovesCalculator{
                     if(newPosition.getRow()==endRow) {
                         type= ChessPiece.PieceType.QUEEN;
                     }
-                    ChessMove move=new ChessMove(myPosition, newPosition, null);
+                    ChessMove move=new ChessMove(myPosition, newPosition, type);
                     moves.add(move);
                 }
             }
         }
         //diagonally left
-        col=col-1;
+        col=myPosition.getColumn()-1;
         newPosition= new ChessPosition(row,col);
         if(!board.outOfBoard(newPosition)&& board.getPiece(newPosition)!=null&& board.getPiece(newPosition).getTeamColor()!=myPiece.getTeamColor()){
             if(newPosition.getRow()==endRow) {
                 type= ChessPiece.PieceType.QUEEN;
             }
-            ChessMove move=new ChessMove(myPosition, newPosition, null);
+            ChessMove move=new ChessMove(myPosition, newPosition, type);
             moves.add(move);
         }
         //diagonally right
-        col=col+1;
+        col=myPosition.getColumn()+1;
         newPosition= new ChessPosition(row,col);
         if(!board.outOfBoard(newPosition)&& board.getPiece(newPosition)!=null&&  board.getPiece(newPosition).getTeamColor()!=myPiece.getTeamColor()){
             if(newPosition.getRow()==endRow) {
                 type= ChessPiece.PieceType.QUEEN;
             }
-            ChessMove move=new ChessMove(myPosition, newPosition, null);
+            ChessMove move=new ChessMove(myPosition, newPosition, type);
             moves.add(move);
         }
         return moves;
