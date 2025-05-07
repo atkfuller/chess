@@ -55,7 +55,61 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        board=new ChessPiece[8][8];
+        for(ChessPiece.PieceType type : ChessPiece.PieceType.values()) {
+            ChessPosition position;
+            ChessPiece piece;
+            switch(type) {
+                case KING:
+                    piece=new ChessPiece(ChessGame.TeamColor.WHITE, type);
+                    position=new ChessPosition(1,5);
+                    addPiece(position, piece);
+                    piece=new ChessPiece(ChessGame.TeamColor.BLACK, type);
+                    position=new ChessPosition(8,5);
+                    addPiece(position, piece);
+                    break;
+                case QUEEN:
+                    piece=new ChessPiece(ChessGame.TeamColor.WHITE, type);
+                    position=new ChessPosition(1,4);
+                    addPiece(position, piece);
+                    piece=new ChessPiece(ChessGame.TeamColor.BLACK, type);
+                    position=new ChessPosition(8,4);
+                    addPiece(position, piece);
+                    break;
+                case BISHOP:
+                    addDuplicatePiece(ChessGame.TeamColor.WHITE, type, 1, 2);
+                    addDuplicatePiece(ChessGame.TeamColor.BLACK, type, 8, 2);
+                    break;
+                case KNIGHT:
+                    addDuplicatePiece(ChessGame.TeamColor.WHITE, type, 1, 1);
+                    addDuplicatePiece(ChessGame.TeamColor.BLACK, type, 8, 1);
+                    break;
+                case ROOK:
+                    addDuplicatePiece(ChessGame.TeamColor.WHITE, type, 1, 0);
+                    addDuplicatePiece(ChessGame.TeamColor.BLACK, type, 8, 0);
+                    break;
+                case PAWN:
+                    piece=new ChessPiece(ChessGame.TeamColor.WHITE, type);
+                    for(int p=1;p<9;p++) {
+                        position=new ChessPosition(2,p);
+                        addPiece(position, piece);
+                    }
+                    piece=new ChessPiece(ChessGame.TeamColor.BLACK, type);
+                    for(int p=1;p<9;p++) {
+                        position=new ChessPosition(7,p);
+                        addPiece(position, piece);
+                    }
+                    break;
+            }
+        }
+
+    }
+    private void addDuplicatePiece(ChessGame.TeamColor color, ChessPiece.PieceType type, int row, int col){
+        ChessPosition position = new ChessPosition(row,8-col);
+        ChessPiece piece = new ChessPiece(color, type);
+        addPiece(position, piece);
+        position = new ChessPosition(row,col+1);
+        addPiece(position, piece);
     }
     public boolean outOfBoard(ChessPosition position) {
         int row = position.getRow();
