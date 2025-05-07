@@ -31,8 +31,7 @@ public class PawnMove implements MovesCalculator{
         int row=myPosition.getRow()+rowIncr;
         int col=myPosition.getColumn();
         ChessPosition newPosition= new ChessPosition(row,col);
-        if(!board.outOfBoard(newPosition)){
-            if(board.getPiece(newPosition)==null) {
+        if(!board.outOfBoard(newPosition)&& board.getPiece(newPosition)==null) {
                 if (newPosition.getRow() == endRow) {
                     moves.addAll(promotePawn(board, myPosition, newPosition, true));
                 } else {
@@ -51,7 +50,6 @@ public class PawnMove implements MovesCalculator{
                     }
                 }
             }
-        }
         //diagonally left
         row=myPosition.getRow()+rowIncr;
         col=myPosition.getColumn()-1;
