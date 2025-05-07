@@ -53,6 +53,7 @@ public class PawnMove implements MovesCalculator{
             }
         }
         //diagonally left
+        row=myPosition.getRow()+rowIncr;
         col=myPosition.getColumn()-1;
         newPosition= new ChessPosition(row,col);
         if(!board.outOfBoard(newPosition)&& board.getPiece(newPosition)!=null&& board.getPiece(newPosition).getTeamColor()!=myPiece.getTeamColor()){
