@@ -111,12 +111,9 @@ public class ChessBoard {
         position = new ChessPosition(row,col+1);
         addPiece(position, piece);
     }
-    public boolean outOfBoard(ChessPosition position) {
+    public boolean insideBoard(ChessPosition position) {
         int row = position.getRow();
         int column = position.getColumn();
-        if(row<1 || row>8 || column<1 || column>8) {
-            return true;
-        }
-        return false;
+        return row >= 1 && row <= 8 && column >= 1 && column <= 8;
     }
 }

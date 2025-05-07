@@ -1,13 +1,12 @@
 package chess;
 
-import java.security.cert.CollectionCertStoreParameters;
 import java.util.ArrayList;
 import java.util.Collection;
 
 public class PawnMove implements MovesCalculator{
     @java.lang.Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new ArrayList<ChessMove>();
+        Collection<ChessMove> moves;
         int whiteRow = 1;
         int blackRow = -1;
         ChessPiece myPiece = board.getPiece(myPosition);
@@ -26,12 +25,11 @@ public class PawnMove implements MovesCalculator{
     }
     private Collection<ChessMove> moveByColor(ChessBoard board, ChessPosition myPosition, int startRow,int endRow, int rowIncr) {
         ChessPiece myPiece=board.getPiece(myPosition);
-        ChessPiece.PieceType type= null;
         Collection<ChessMove> moves=new ArrayList<ChessMove>();
         int row=myPosition.getRow()+rowIncr;
         int col=myPosition.getColumn();
         ChessPosition newPosition= new ChessPosition(row,col);
-        if(!board.outOfBoard(newPosition)&& board.getPiece(newPosition)==null) {
+        if(board.insideBoard(newPosition) && board.getPiece(newPosition)==null) {
                 if (newPosition.getRow() == endRow) {
                     moves.addAll(promotePawn(board, myPosition, newPosition, true));
                 } else {
@@ -39,9 +37,8 @@ public class PawnMove implements MovesCalculator{
                 }
                 if (myPosition.getRow() == startRow) {
                     row = row + rowIncr;
-                    ;
                     newPosition = new ChessPosition(row, col);
-                    if (!board.outOfBoard(newPosition) && board.getPiece(newPosition) == null) {
+                    if (board.insideBoard(newPosition) && board.getPiece(newPosition) == null) {
                         if (newPosition.getRow() == endRow) {
                             moves.addAll(promotePawn(board, myPosition, newPosition, true));
                         } else {
@@ -54,7 +51,7 @@ public class PawnMove implements MovesCalculator{
         row=myPosition.getRow()+rowIncr;
         col=myPosition.getColumn()-1;
         newPosition= new ChessPosition(row,col);
-        if(!board.outOfBoard(newPosition)&& board.getPiece(newPosition)!=null&& board.getPiece(newPosition).getTeamColor()!=myPiece.getTeamColor()){
+        if(board.insideBoard(newPosition) && board.getPiece(newPosition)!=null&& board.getPiece(newPosition).getTeamColor()!=myPiece.getTeamColor()){
             if(newPosition.getRow()==endRow) {
                 moves.addAll(promotePawn(board, myPosition, newPosition, true));
             }
@@ -65,7 +62,7 @@ public class PawnMove implements MovesCalculator{
         //diagonally right
         col=myPosition.getColumn()+1;
         newPosition= new ChessPosition(row,col);
-        if(!board.outOfBoard(newPosition)&& board.getPiece(newPosition)!=null&&  board.getPiece(newPosition).getTeamColor()!=myPiece.getTeamColor()){
+        if(board.insideBoard(newPosition) && board.getPiece(newPosition)!=null&&  board.getPiece(newPosition).getTeamColor()!=myPiece.getTeamColor()){
             if(newPosition.getRow()==endRow) {
                 moves.addAll(promotePawn(board, myPosition, newPosition, true));
             }

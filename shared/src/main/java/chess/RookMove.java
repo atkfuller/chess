@@ -16,7 +16,7 @@ public class RookMove implements MovesCalculator{
             int r = row + dir[0];
             int c = col + dir[1];
             ChessPosition newPosition = new ChessPosition(r, c);
-            while(!board.outOfBoard(newPosition)) {
+            while(board.insideBoard(newPosition)) {
                 if(board.getPiece(newPosition) == null){
                     ChessMove move=new ChessMove(myPosition, newPosition, null);
                     moves.add(move);

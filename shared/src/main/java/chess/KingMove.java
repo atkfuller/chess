@@ -16,7 +16,7 @@ public class KingMove implements MovesCalculator{
             int r = row + dir[0];
             int c = col + dir[1];
             ChessPosition newPosition = new ChessPosition(r, c);
-            if(!board.outOfBoard(newPosition)) {
+            if(board.insideBoard(newPosition)) {
                 if (board.getPiece(newPosition) == null) {
                     ChessMove move = new ChessMove(myPosition, newPosition, null);
                     moves.add(move);

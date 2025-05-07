@@ -11,7 +11,7 @@ import java.util.Objects;
 public class ChessMove {
     private final ChessPosition start;
     private final ChessPosition end;
-    private ChessPiece.PieceType promotion;
+    private final ChessPiece.PieceType promotion;
 
     @Override
     public boolean equals(Object o) {
