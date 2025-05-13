@@ -13,8 +13,8 @@ import java.util.Objects;
  */
 public class ChessBoard {
     private ChessPiece[][] board =new ChessPiece[8][8];
-    private ArrayList<ChessPiece> blackPieces=new ArrayList<>();
-    private ArrayList<ChessPiece> whitePieces=new ArrayList<>();
+    private ArrayList<ChessPosition> blackPieces=new ArrayList<>();
+    private ArrayList<ChessPosition> whitePieces=new ArrayList<>();
     private ChessPosition whiteKing;
     private ChessPosition blackKing;
 
@@ -30,10 +30,10 @@ public class ChessBoard {
     }
 
 
-    public Collection<ChessPiece> getWhitePieces(){
+    public Collection<ChessPosition> getWhitePieces(){
         return whitePieces;
     }
-    public Collection<ChessPiece> getBlackPieces(){
+    public Collection<ChessPosition> getBlackPieces(){
         return blackPieces;
     }
     /**
@@ -44,14 +44,14 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         if(getPiece(position)!=null){
-            removePiecefromBoard(getPiece(position));
+            removePiecefromBoard(getPiece(position), position);
         }
         else{
             if(piece.getTeamColor()== ChessGame.TeamColor.WHITE){
-                whitePieces.add(piece);
+                whitePieces.add(position);
             }
             else{
-                blackPieces.add(piece);
+                blackPieces.add(position);
             }
         }
         if(piece.getPieceType()==ChessPiece.PieceType.KING){
@@ -160,14 +160,14 @@ public class ChessBoard {
     private void removePiece(ChessPosition position){
         ChessPiece myPiece=getPiece(position);
         board[8-position.getRow()][position.getColumn()-1]=null;
-        removePiecefromBoard(myPiece);
+        removePiecefromBoard(myPiece, position);
     }
-    private void removePiecefromBoard(ChessPiece myPiece){
+    private void removePiecefromBoard(ChessPiece myPiece, ChessPosition position){
         if(myPiece.getTeamColor()== ChessGame.TeamColor.WHITE){
-            whitePieces.remove(myPiece);
+            whitePieces.remove(position);
         }
         else{
-            blackPieces.remove(myPiece);
+            blackPieces.remove(position);
         }
     }
     public void movePiece(ChessMove move){
