@@ -10,6 +10,7 @@ import java.util.Collection;
  */
 public class ChessGame {
     private TeamColor teamTurn;
+    private ChessBoard board;
     public ChessGame() {
 
     }
@@ -47,7 +48,9 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        //gives all the validMoves at the startPosition
+        //null if no piece is this position
+        ChessPiece currPiece= board.get
     }
 
     /**
@@ -67,7 +70,8 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //check what position the teamColor's king is in
+        // then check all the validmoves of the opposing team players to see if it has a move to that kings position.
     }
 
     /**
@@ -77,7 +81,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //cycle through all the kings valid moves and check each position if it is still in check.
     }
 
     /**
@@ -88,7 +92,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //checks if all the team current pieces have no valid moves use the validMove method
     }
 
     /**
