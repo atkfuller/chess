@@ -13,7 +13,7 @@ public class ChessGame {
     private TeamColor teamTurn;
     private ChessBoard gameBoard;
     public ChessGame() {
-
+        gameBoard=new ChessBoard();
     }
 
     /**
