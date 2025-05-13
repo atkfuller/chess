@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -11,6 +12,8 @@ import java.util.Objects;
  */
 public class ChessBoard {
     private ChessPiece[][] board =new ChessPiece[8][8];
+    private ArrayList<ChessPiece> blackPieces=new ArrayList<>();
+    private ArrayList<ChessPiece> whitePieces=new ArrayList<>();
     public ChessBoard() {
         resetBoard();
     }
@@ -22,7 +25,19 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
+        if(getPiece(position)!=null){
+            removePiecefromBoard(getPiece(position));
+        }
+        else{
+            if(piece.getTeamColor()== ChessGame.TeamColor.WHITE){
+                whitePieces.add(piece);
+            }
+            else{
+                blackPieces.add(piece);
+            }
+        }
         board[8-position.getRow()][position.getColumn()-1]=piece;
+
     }
 
     @Override
@@ -117,7 +132,17 @@ public class ChessBoard {
         return row >= 1 && row <= 8 && column >= 1 && column <= 8;
     }
     private void removePiece(ChessPosition position){
+        ChessPiece myPiece=getPiece(position);
         board[8-position.getRow()][position.getColumn()-1]=null;
+        removePiecefromBoard(myPiece);
+    }
+    private void removePiecefromBoard(ChessPiece myPiece){
+        if(myPiece.getTeamColor()== ChessGame.TeamColor.WHITE){
+            whitePieces.remove(myPiece);
+        }
+        else{
+            blackPieces.remove(myPiece);
+        }
     }
     public void movePiece(ChessMove move){
         ChessPosition start=move.getStartPosition();
