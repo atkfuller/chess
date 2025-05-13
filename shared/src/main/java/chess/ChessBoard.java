@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -14,10 +15,27 @@ public class ChessBoard {
     private ChessPiece[][] board =new ChessPiece[8][8];
     private ArrayList<ChessPiece> blackPieces=new ArrayList<>();
     private ArrayList<ChessPiece> whitePieces=new ArrayList<>();
+    private ChessPosition whiteKing;
+    private ChessPosition blackKing;
+
+    public ChessPosition getWhiteKing() {
+        return whiteKing;
+    }
+    public ChessPosition getBlackKing() {
+        return  blackKing;
+    }
+
     public ChessBoard() {
         resetBoard();
     }
 
+
+    public Collection<ChessPiece> getWhitePieces(){
+        return whitePieces;
+    }
+    public Collection<ChessPiece> getBlackPieces(){
+        return blackPieces;
+    }
     /**
      * Adds a chess piece to the chessboard
      *
@@ -34,6 +52,14 @@ public class ChessBoard {
             }
             else{
                 blackPieces.add(piece);
+            }
+        }
+        if(piece.getPieceType()==ChessPiece.PieceType.KING){
+            if(piece.getTeamColor()== ChessGame.TeamColor.WHITE){
+                whiteKing=position;
+            }
+            else{
+                blackKing=position;
             }
         }
         board[8-position.getRow()][position.getColumn()-1]=piece;

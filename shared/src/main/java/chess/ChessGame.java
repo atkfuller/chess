@@ -113,7 +113,21 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         //check what position the teamColor's king is in
         // then check all the validmoves of the opposing team players to see if it has a move to that kings position.
-        throw new RuntimeException("Not implemented");
+        Collection<ChessPiece> oppPieces;
+        ChessPosition kingPos;
+        if(teamColor==TeamColor.WHITE){
+            oppPieces=gameBoard.getBlackPieces();
+            kingPos=gameBoard.getWhiteKing();
+        }
+        else{
+            oppPieces=gameBoard.getWhitePieces();
+            kingPos=gameBoard.getBlackKing();
+        }
+        for(ChessPiece piece: oppPieces){
+            Collection<ChessMove> moves=piece.pieceMoves(gameBoard, );
+
+        }
+
     }
 
 
