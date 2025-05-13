@@ -80,7 +80,7 @@ public class ChessGame {
         for(ChessMove move: validMoves){
             ChessBoard testBoard=board;
             testBoard.movePiece(move);
-            if(isInCheck(getTeamTurn())){
+            if(isInCheck(getTeamTurn(), testBoard)){
                 validMoves.remove(move);
             }
         }
@@ -110,23 +110,29 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public boolean isInCheck(TeamColor teamColor) {
+    public boolean isInCheck(TeamColor teamColor, ChessBoard board) {
         //check what position the teamColor's king is in
         // then check all the validmoves of the opposing team players to see if it has a move to that kings position.
-        Collection<ChessPiece> oppPieces;
+        Collection<ChessPosition> oppPieces;
         ChessPosition kingPos;
         if(teamColor==TeamColor.WHITE){
-            oppPieces=gameBoard.getBlackPieces();
-            kingPos=gameBoard.getWhiteKing();
+            oppPieces=board.getBlackPieces();
+            kingPos=board.getWhiteKing();
         }
         else{
-            oppPieces=gameBoard.getWhitePieces();
-            kingPos=gameBoard.getBlackKing();
+            oppPieces=board.getWhitePieces();
+            kingPos=board.getBlackKing();
         }
-        for(ChessPiece piece: oppPieces){
-            Collection<ChessMove> moves=piece.pieceMoves(gameBoard, );
-
+        for(ChessPosition thisPosition: oppPieces){
+            ChessPiece piece=board.getPiece(thisPosition);
+            Collection<ChessMove> moves=piece.pieceMoves(board, thisPosition);
+            for(ChessMove move: moves){
+                if(move.getEndPosition()==kingPos){
+                    return true;
+                }
+            }
         }
+        return false;
 
     }
 
