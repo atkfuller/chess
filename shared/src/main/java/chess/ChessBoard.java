@@ -116,4 +116,14 @@ public class ChessBoard {
         int column = position.getColumn();
         return row >= 1 && row <= 8 && column >= 1 && column <= 8;
     }
+    private void removePiece(ChessPosition position){
+        board[8-position.getRow()][position.getColumn()-1]=null;
+    }
+    public void movePiece(ChessMove move){
+        ChessPosition start=move.getStartPosition();
+        ChessPiece myPiece=getPiece(start);
+        ChessPosition end=move.getEndPosition();
+        addPiece(end, myPiece);
+        removePiece(start);
+    }
 }

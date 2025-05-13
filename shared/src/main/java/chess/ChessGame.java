@@ -10,7 +10,7 @@ import java.util.Collection;
  */
 public class ChessGame {
     private TeamColor teamTurn;
-    private ChessBoard board;
+    private ChessBoard gameBoard;
     public ChessGame() {
 
     }
@@ -50,9 +50,27 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         //gives all the validMoves at the startPosition
         //null if no piece is this position
-        ChessPiece currPiece= board.get
+        Collection<ChessMove> validMoves;
+        Collection<ChessMove> moves;
+        ChessPiece currPiece= gameBoard.getPiece(startPosition);
+        if(currPiece==null){
+            return null;
+        }
+        moves=currPiece.pieceMoves(gameBoard, startPosition);
+        validMoves=testMoves(gameBoard,moves);
+        return validMoves;
     }
 
+    private Collection<ChessMove> testMoves(ChessBoard board, Collection<ChessMove> validMoves){
+        for(ChessMove move: validMoves){
+            ChessBoard testBoard=board;
+            testBoard.movePiece(move);
+            if(isInCheck(getTeamTurn())){
+                validMoves.remove(move);
+            }
+        }
+        return validMoves;
+    }
     /**
      * Makes a move in a chess game
      *
@@ -101,7 +119,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        gameBoard=board;
     }
 
     /**
@@ -110,6 +128,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return gameBoard;
     }
 }
