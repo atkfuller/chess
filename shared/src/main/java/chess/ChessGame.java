@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -30,6 +31,20 @@ public class ChessGame {
     public void setTeamTurn(TeamColor team) {
       teamTurn=team;
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return teamTurn == chessGame.teamTurn && Objects.equals(gameBoard, chessGame.gameBoard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(teamTurn, gameBoard);
     }
 
     /**
@@ -78,7 +93,15 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition start=move.getStartPosition();
+        ChessPiece piece=gameBoard.getPiece(start);
+        Collection<ChessMove> moves=validMoves(start);
+        if(piece.getTeamColor()!=teamTurn | moves.contains(move)){
+            throw new InvalidMoveException("invalid move");
+        }
+        else{
+            gameBoard.movePiece(move);
+        }
     }
 
     /**
@@ -90,7 +113,9 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         //check what position the teamColor's king is in
         // then check all the validmoves of the opposing team players to see if it has a move to that kings position.
+        throw new RuntimeException("Not implemented");
     }
+
 
     /**
      * Determines if the given team is in checkmate
@@ -100,6 +125,7 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         //cycle through all the kings valid moves and check each position if it is still in check.
+        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -111,6 +137,7 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         //checks if all the team current pieces have no valid moves use the validMove method
+        throw new RuntimeException("Not implemented");
     }
 
     /**
