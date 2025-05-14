@@ -172,6 +172,9 @@ public class ChessBoard {
     public void movePiece(ChessMove move){
         ChessPosition start=move.getStartPosition();
         ChessPiece myPiece=getPiece(start);
+        if(move.getPromotionPiece()!=null){
+            myPiece=new ChessPiece(myPiece.getTeamColor(), move.getPromotionPiece());
+        }
         ChessPosition end=move.getEndPosition();
         addPiece(end, myPiece);
         removePiece(start);
