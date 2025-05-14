@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -72,22 +73,23 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         //gives all the validMoves at the startPosition
         //null if no piece is this position
-        Collection<ChessMove> moves;
-        Collection<>
+        ArrayList<ChessMove> moves=new ArrayList<>();
+        Collection<ChessMove> valid=new ArrayList<>();
         ChessPiece currPiece= gameBoard.getPiece(startPosition);
         if(currPiece==null){
             return null;
         }
-        moves=currPiece.pieceMoves(gameBoard, startPosition);
+        moves= (ArrayList<ChessMove>) currPiece.pieceMoves(gameBoard, startPosition);
+        valid= (Collection<ChessMove>) moves.clone();
         for(ChessMove move: moves){
             ChessBoard testBoard=gameBoard.clone();
             testBoard.movePiece(move);
             ChessGame simulatedGame= new ChessGame(testBoard, this.getTeamTurn());
             if(simulatedGame.isInCheck(currPiece.getTeamColor())){
-                moves.remove(move);
+                valid.remove(move);
             }
         }
-        return moves;
+        return valid;
     }
 
     /**
@@ -157,17 +159,23 @@ public class ChessGame {
         //cycle through all the kings valid moves and check each position if it is still in check.
         Collection<ChessMove> kingMoves;
         ChessPosition kingPos;
+        if (!isInCheck(teamColor)) {
+            return false; // Can't be in checkmate if not in check
+        }
+        Collection<ChessPosition> pieces;
         if(teamColor==TeamColor.WHITE){
-            kingPos=gameBoard.getWhiteKing();
+            pieces=gameBoard.getWhitePieces();
         }
         else{
-            kingPos=gameBoard.getBlackKing();
+            pieces=gameBoard.getBlackPieces();
         }
-        kingMoves=this.validMoves(kingPos);
-        if(kingMoves.isEmpty()){
-            return true;
+        for(ChessPosition pos: pieces){
+            Collection<ChessMove> moves=this.validMoves(pos);
+            if(!moves.isEmpty()){
+                return false;
+            }
         }
-        return false;
+        return true;
     }
 
     /**

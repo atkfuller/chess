@@ -1,9 +1,8 @@
 package chess;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
+
+
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -13,8 +12,8 @@ import java.util.Objects;
  */
 public class ChessBoard {
     private ChessPiece[][] board =new ChessPiece[8][8];
-    private ArrayList<ChessPosition> blackPieces=new ArrayList<>();
-    private ArrayList<ChessPosition> whitePieces=new ArrayList<>();
+    private HashSet<ChessPosition>blackPieces= new HashSet<ChessPosition>();
+    private HashSet<ChessPosition> whitePieces=new HashSet<ChessPosition>();
     private ChessPosition whiteKing;
     private ChessPosition blackKing;
 
@@ -36,17 +35,16 @@ public class ChessBoard {
     public ChessBoard() {
     }
 
-
-    public ArrayList<ChessPosition> getWhitePieces(){
+    public HashSet<ChessPosition> getWhitePieces(){
         return whitePieces;
     }
-    public ArrayList<ChessPosition> getBlackPieces(){
+    public HashSet<ChessPosition> getBlackPieces(){
         return blackPieces;
     }
-    public void setWhitePieces(ArrayList<ChessPosition> positions){
+    public void setWhitePieces(HashSet<ChessPosition> positions){
         whitePieces=positions;
     }
-    public void setBlackPieces(ArrayList<ChessPosition> positions){
+    public void setBlackPieces(HashSet<ChessPosition> positions){
         blackPieces=positions;
     }
     /**
@@ -205,8 +203,8 @@ public class ChessBoard {
 
         ChessBoard clonedBoard = new ChessBoard();
         clonedBoard.setBoard(newBoard); // you’ll need a method to do this, or set directly
-        clonedBoard.setBlackPieces((ArrayList<ChessPosition>) blackPieces.clone());
-        clonedBoard.setWhitePieces((ArrayList<ChessPosition>) whitePieces.clone());
+        clonedBoard.setBlackPieces((HashSet<ChessPosition>) blackPieces.clone());
+        clonedBoard.setWhitePieces((HashSet<ChessPosition>) whitePieces.clone());
         clonedBoard.setBlackKing(blackKing);
         clonedBoard.setWhiteKing(whiteKing);
         return clonedBoard;
