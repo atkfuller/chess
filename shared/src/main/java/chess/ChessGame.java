@@ -71,22 +71,21 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         //gives all the validMoves at the startPosition
         //null if no piece is this position
-        Collection<ChessMove> validMoves;
         Collection<ChessMove> moves;
         ChessPiece currPiece= gameBoard.getPiece(startPosition);
         if(currPiece==null){
             return null;
         }
-        validMoves=currPiece.pieceMoves(gameBoard, startPosition);
-        for(ChessMove move: validMoves){
+        moves=currPiece.pieceMoves(gameBoard, startPosition);
+        for(ChessMove move: moves){
             ChessBoard testBoard=gameBoard.clone();
             testBoard.movePiece(move);
             ChessGame simulatedGame= new ChessGame(testBoard, this.getTeamTurn());
             if(simulatedGame.isInCheck(currPiece.getTeamColor())){
-                validMoves.remove(move);
+                moves.remove(move);
             }
         }
-        return validMoves;
+        return moves;
     }
 
     /**
@@ -99,7 +98,7 @@ public class ChessGame {
         ChessPosition start=move.getStartPosition();
         ChessPiece piece=gameBoard.getPiece(start);
         Collection<ChessMove> moves=validMoves(start);
-        if(piece.getTeamColor()!=teamTurn | moves.contains(move)){
+        if(piece.getTeamColor()!=teamTurn | !moves.contains(move)){
             throw new InvalidMoveException("invalid move");
         }
         else{

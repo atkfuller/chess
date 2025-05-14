@@ -183,7 +183,7 @@ public class ChessBoard {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 ChessPosition position=new ChessPosition(row, col);
-                ChessPiece originalPiece = this.getPiece(position);
+                ChessPiece originalPiece = getPiece(position);
                 if (originalPiece != null) {
                     newBoard.addPiece(position, originalPiece);
                 }
