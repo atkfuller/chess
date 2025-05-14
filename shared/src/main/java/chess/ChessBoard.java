@@ -26,7 +26,6 @@ public class ChessBoard {
     }
 
     public ChessBoard() {
-        resetBoard();
     }
 
 
@@ -179,17 +178,23 @@ public class ChessBoard {
     }
 
     public ChessBoard clone(){
-        ChessBoard newBoard = new ChessBoard();
+        ChessPiece[][] newBoard = new ChessPiece[8][8];
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                ChessPosition position=new ChessPosition(row, col);
-                ChessPiece originalPiece = getPiece(position);
+                ChessPiece originalPiece = this.board[row][col];
                 if (originalPiece != null) {
-                    newBoard.addPiece(position, originalPiece);
+                    newBoard[row][col] = originalPiece; // or just copy reference if immutable
                 }
             }
         }
 
-        return newBoard;
-    }
+        ChessBoard clonedBoard = new ChessBoard();
+        clonedBoard.setBoard(newBoard); // you’ll need a method to do this, or set directly
+
+        return clonedBoard;
 }
+
+    private void setBoard(ChessPiece[][] newBoard) {
+        board=newBoard;
+    }
+    }
