@@ -73,6 +73,7 @@ public class ChessGame {
         //gives all the validMoves at the startPosition
         //null if no piece is this position
         Collection<ChessMove> moves;
+        Collection<>
         ChessPiece currPiece= gameBoard.getPiece(startPosition);
         if(currPiece==null){
             return null;
@@ -136,7 +137,8 @@ public class ChessGame {
             ChessPiece piece=gameBoard.getPiece(thisPosition);
             Collection<ChessMove> moves=piece.pieceMoves(gameBoard, thisPosition);
             for(ChessMove move: moves){
-                if(move.getEndPosition()==kingPos){
+                ChessPosition end = move.getEndPosition();
+                if(end.getRow()==kingPos.getRow() && end.getColumn()==kingPos.getColumn()){
                     return true;
                 }
             }
