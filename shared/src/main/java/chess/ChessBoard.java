@@ -18,6 +18,14 @@ public class ChessBoard {
     private ChessPosition whiteKing;
     private ChessPosition blackKing;
 
+    public void setBlackKing(ChessPosition blackKing) {
+        this.blackKing = blackKing;
+    }
+
+    public void setWhiteKing(ChessPosition whiteKing) {
+        this.whiteKing = whiteKing;
+    }
+
     public ChessPosition getWhiteKing() {
         return whiteKing;
     }
@@ -51,13 +59,10 @@ public class ChessBoard {
         if(getPiece(position)!=null){
             removePiecefromBoard(getPiece(position), position);
         }
-        else{
-            if(piece.getTeamColor()== ChessGame.TeamColor.WHITE){
-                whitePieces.add(position);
-            }
-            else{
-                blackPieces.add(position);
-            }
+        if(piece.getTeamColor()== ChessGame.TeamColor.WHITE){
+            whitePieces.add(position);
+        } else{
+            blackPieces.add(position);
         }
         if(piece.getPieceType()==ChessPiece.PieceType.KING){
             if(piece.getTeamColor()== ChessGame.TeamColor.WHITE){
@@ -69,20 +74,6 @@ public class ChessBoard {
         }
         board[8-position.getRow()][position.getColumn()-1]=piece;
 
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessBoard that = (ChessBoard) o;
-        return Objects.deepEquals(board, that.board);
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.deepHashCode(board);
     }
 
     /**
@@ -175,6 +166,21 @@ public class ChessBoard {
             blackPieces.remove(position);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(board, that.board) && Objects.equals(blackPieces, that.blackPieces) && Objects.equals(whitePieces, that.whitePieces) && Objects.equals(whiteKing, that.whiteKing) && Objects.equals(blackKing, that.blackKing);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(Arrays.deepHashCode(board), blackPieces, whitePieces, whiteKing, blackKing);
+    }
+
     public void movePiece(ChessMove move){
         ChessPosition start=move.getStartPosition();
         ChessPiece myPiece=getPiece(start);
@@ -199,8 +205,10 @@ public class ChessBoard {
 
         ChessBoard clonedBoard = new ChessBoard();
         clonedBoard.setBoard(newBoard); // you’ll need a method to do this, or set directly
-        clonedBoard.setBlackPieces(blackPieces);
-        clonedBoard.setWhitePieces(whitePieces);
+        clonedBoard.setBlackPieces((ArrayList<ChessPosition>) blackPieces.clone());
+        clonedBoard.setWhitePieces((ArrayList<ChessPosition>) whitePieces.clone());
+        clonedBoard.setBlackKing(blackKing);
+        clonedBoard.setWhiteKing(whiteKing);
         return clonedBoard;
 }
 

@@ -16,26 +16,26 @@ public class ChessPosition {
         this.positionCol = col;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessPosition that = (ChessPosition) o;
-        return positionRow == that.positionRow && positionCol == that.positionCol;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(positionRow, positionCol);
-    }
-
     /**
      * @return which row this position is in
      * 1 codes for the bottom row
      */
     public int getRow() {
         return positionRow;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPosition position = (ChessPosition) o;
+        return positionRow == position.positionRow && positionCol == position.positionCol;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(positionRow, positionCol);
     }
 
     /**
