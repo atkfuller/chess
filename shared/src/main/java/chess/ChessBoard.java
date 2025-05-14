@@ -177,4 +177,8 @@ public class ChessBoard {
         addPiece(end, myPiece);
         removePiece(start);
     }
+
+    public ChessPiece[][] getBoard() {
+        return board;
+    }
 }

@@ -14,6 +14,7 @@ public class ChessGame {
     private ChessBoard gameBoard;
     public ChessGame() {
         gameBoard=new ChessBoard();
+        teamTurn=TeamColor.WHITE;
     }
 
     /**
@@ -78,9 +79,9 @@ public class ChessGame {
 
     private Collection<ChessMove> testMoves(ChessBoard board, Collection<ChessMove> validMoves){
         for(ChessMove move: validMoves){
-            ChessBoard testBoard=board;
+            ChessBoard testBoard=board.getBoard();
             testBoard.movePiece(move);
-            if(isInCheck(getTeamTurn(), testBoard)){
+            if(isinCheckTest(getTeamTurn(), testBoard)){
                 validMoves.remove(move);
             }
         }
@@ -110,7 +111,12 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public boolean isInCheck(TeamColor teamColor, ChessBoard board) {
+    public boolean isInCheck(TeamColor teamColor) {
+        //check what position the teamColor's king is in
+        // then check all the validmoves of the opposing team players to see if it has a move to that kings position.
+        return isinCheckTest(teamColor, gameBoard);
+    }
+    private boolean isinCheckTest(TeamColor teamColor, ChessBoard board) {
         //check what position the teamColor's king is in
         // then check all the validmoves of the opposing team players to see if it has a move to that kings position.
         Collection<ChessPosition> oppPieces;
