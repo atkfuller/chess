@@ -178,7 +178,18 @@ public class ChessBoard {
         removePiece(start);
     }
 
-    public ChessPiece[][] getBoard() {
-        return board;
+    public ChessBoard clone(){
+        ChessBoard newBoard = new ChessBoard();
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                ChessPosition position=new ChessPosition(row, col);
+                ChessPiece originalPiece = this.getPiece(position);
+                if (originalPiece != null) {
+                    newBoard.addPiece(position, originalPiece);
+                }
+            }
+        }
+
+        return newBoard;
     }
 }
