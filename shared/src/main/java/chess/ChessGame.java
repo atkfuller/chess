@@ -105,6 +105,12 @@ public class ChessGame {
         else{
             gameBoard.movePiece(move);
         }
+        if(teamTurn==TeamColor.WHITE){
+            setTeamTurn(TeamColor.BLACK);
+        }
+        else{
+            setTeamTurn(TeamColor.WHITE);
+        }
     }
 
     /**

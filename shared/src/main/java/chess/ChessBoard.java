@@ -29,11 +29,17 @@ public class ChessBoard {
     }
 
 
-    public Collection<ChessPosition> getWhitePieces(){
+    public ArrayList<ChessPosition> getWhitePieces(){
         return whitePieces;
     }
-    public Collection<ChessPosition> getBlackPieces(){
+    public ArrayList<ChessPosition> getBlackPieces(){
         return blackPieces;
+    }
+    public void setWhitePieces(ArrayList<ChessPosition> positions){
+        whitePieces=positions;
+    }
+    public void setBlackPieces(ArrayList<ChessPosition> positions){
+        blackPieces=positions;
     }
     /**
      * Adds a chess piece to the chessboard
@@ -193,7 +199,8 @@ public class ChessBoard {
 
         ChessBoard clonedBoard = new ChessBoard();
         clonedBoard.setBoard(newBoard); // you’ll need a method to do this, or set directly
-
+        clonedBoard.setBlackPieces(blackPieces);
+        clonedBoard.setWhitePieces(whitePieces);
         return clonedBoard;
 }
 
