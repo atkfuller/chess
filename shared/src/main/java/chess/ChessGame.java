@@ -102,6 +102,9 @@ public class ChessGame {
         ChessPosition start=move.getStartPosition();
         ChessPiece piece=gameBoard.getPiece(start);
         Collection<ChessMove> moves=validMoves(start);
+        if(moves==null){
+            throw new InvalidMoveException("invalid move");
+        }
         if(piece.getTeamColor()!=teamTurn | !moves.contains(move)){
             throw new InvalidMoveException("invalid move");
         }
