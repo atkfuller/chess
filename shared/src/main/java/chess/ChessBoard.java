@@ -57,17 +57,18 @@ public class ChessBoard {
         if(getPiece(position)!=null){
             removePiecefromBoard(getPiece(position), position);
         }
-        if(piece.getTeamColor()== ChessGame.TeamColor.WHITE){
-            whitePieces.add(position);
-        } else{
-            blackPieces.add(position);
-        }
-        if(piece.getPieceType()==ChessPiece.PieceType.KING){
-            if(piece.getTeamColor()== ChessGame.TeamColor.WHITE){
-                whiteKing=position;
+        if(piece!=null) {
+            if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                whitePieces.add(position);
+            } else {
+                blackPieces.add(position);
             }
-            else{
-                blackKing=position;
+            if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                    whiteKing = position;
+                } else {
+                    blackKing = position;
+                }
             }
         }
         board[8-position.getRow()][position.getColumn()-1]=piece;
