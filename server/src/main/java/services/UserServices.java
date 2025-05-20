@@ -5,8 +5,9 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 
-import java.AuthData;
-import java.UserData;
+import model.AuthData;
+import model.UserData;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class UserServices {
@@ -21,7 +22,7 @@ public class UserServices {
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
        UserData user=userAccess.getUser(registerRequest.username());
         if(user!=null){
-            throw new DataAccessException("already taken username");
+            throw new DataAccessException(403, "already taken username");
         }
         else{
             user= new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
@@ -34,6 +35,12 @@ public class UserServices {
 
     public static String generateToken() {
         return UUID.randomUUID().toString();
+    }
+    public ArrayList<UserData> getUsers(){
+        return userAccess.getUsers();
+    }
+    public ArrayList<AuthData> getAuth(){
+        return authAccess.getAuthencation();
     }
     //public LoginResult login(LoginRequest loginRequest) {}
     //public void logout(LogoutRequest logoutRequest) {}

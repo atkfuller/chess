@@ -1,10 +1,11 @@
 package dataaccess;
 
-import java.UserData;
+import model.GameData;
+import model.UserData;
 import java.util.ArrayList;
 
 public class GameDAO {
-    private ArrayList<UserData> games;
+    private ArrayList<GameData> games=new ArrayList<GameData>();
     public void clear(){
         games.clear();
     }

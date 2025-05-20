@@ -2,15 +2,18 @@ package dataaccess;
 
 import org.eclipse.jetty.server.Authentication;
 
-import java.UserData;
+import model.UserData;
 import java.util.ArrayList;
 
 public class UserDAO {
-    private ArrayList<UserData> users;
+    private ArrayList<UserData> users=new ArrayList<UserData>();
     public void clear(){
         users.clear();
     }
     public UserData getUser(String username)throws DataAccessException{
+        if(users.isEmpty()){
+            return null;
+        }
         for(UserData data: users){
             if(data.username()==username){
                 return data;
@@ -23,5 +26,7 @@ public class UserDAO {
     }
 
 
-
+    public ArrayList<UserData> getUsers() {
+        return users;
+    }
 }
