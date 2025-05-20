@@ -32,6 +32,11 @@ public class UserServices {
             return new RegisterResult(registerRequest.username(), auth.authToken());
         }
     }
+    public void clear(){
+        userAccess.clear();
+        authAccess.clear();
+        gameAccess.clear();
+    }
 
     public static String generateToken() {
         return UUID.randomUUID().toString();

@@ -30,6 +30,18 @@ class servicesTest {
             assertEquals(1, auth.size());
             assertTrue(users.contains(user));
         }
+        @Test
+        void clear() throws DataAccessException{
+            UserData user=new UserData("atfuller", "teddy","good@gmail.com");
+            RegisterRequest req= new RegisterRequest("atfuller", "teddy","good@gmail.com" );
+            RegisterResult  res= service.register(req);
+            var users = service.getUsers();
+            var auth=service.getAuth();
+            service.clear();
+            assertEquals(0, users.size());
+            assertEquals(0, auth.size());
+    }
+
         /*
         @Test
         void listPets() throws ResponseException {
