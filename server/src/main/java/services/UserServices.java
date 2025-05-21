@@ -49,7 +49,7 @@ public class UserServices {
     public void logout(LogoutRequest request) throws DataAccessException{
         AuthData data=authAccess.getAuth(request.authToken());
         if(data==null){
-            throw new DataAccessException(401, "Error: unauthroized");
+            throw new DataAccessException(401, "Error: unauthorized");
         }
         authAccess.deleteAuth(data);
     }

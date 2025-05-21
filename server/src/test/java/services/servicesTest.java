@@ -101,11 +101,22 @@ class servicesTest {
         ArrayList< AuthData> auth= service.getAuth();
         ArrayList<UserData> users= service.getUsers();
         UserData user= users.get(4);
-        AuthDAO access= new AuthDAO();
-        AuthData data=access.getAuthByUsername(user.username());
+        AuthData data=accessAuth.getAuthByUsername(user.username());
         service.logout(new LogoutRequest(data.authToken()));
         assertFalse(auth.contains(data));
 
+    }
+    @Test
+    void logoutWrong() throws DataAccessException{
+        populateUsers();
+        ArrayList<UserData> users= service.getUsers();
+        UserData user= users.get(4);
+        AuthData data=accessAuth.getAuthByUsername(user.username());
+        DataAccessException ex = assertThrows(DataAccessException.class, () -> {
+            service.logout(new LogoutRequest("wrongtoken"));
+        });
+
+        assertEquals("Error: unauthorized", ex.getMessage());
     }
 
 
