@@ -1,4 +1,4 @@
-package services;
+package service;
 
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
@@ -7,10 +7,7 @@ import dataaccess.UserDAO;
 
 import model.*;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
 import java.util.UUID;
 
 public class UserServices {

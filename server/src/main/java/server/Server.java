@@ -5,7 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import server.handler.*;
-import services.*;
+import service.*;
 import spark.*;
 
 public class Server {

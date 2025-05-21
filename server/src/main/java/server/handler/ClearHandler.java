@@ -1,11 +1,10 @@
 package server.handler;
 
 import com.google.gson.Gson;
-import services.ClearService;
+import service.ClearService;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import services.UserServices;
 
 import java.util.Map;
 
