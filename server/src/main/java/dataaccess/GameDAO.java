@@ -9,7 +9,7 @@ import java.util.*;
 public class GameDAO {
     private ArrayList<GameData> games=new ArrayList<GameData>();
     private static Set<Integer> gameIDs= new HashSet<>();
-    private static final Random rand = new Random();
+    private static final Random RAND = new Random();
     public void clear(){
         games.clear();
     }
@@ -71,7 +71,7 @@ public class GameDAO {
     public static int generateUniqueID() {
         int id;
         do {
-            id = rand.nextInt(9000);
+            id = RAND.nextInt(9000);
         } while (gameIDs.contains(id));
         gameIDs.add(id);
         return id;

@@ -2,17 +2,11 @@ package server;
 
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
-import com.google.gson.Gson;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import server.handler.*;
 import services.*;
 import spark.*;
-
-import javax.xml.crypto.Data;
-import model.UserData;
-
-import java.util.Map;
 
 public class Server {
     private final UserServices userService;
@@ -56,7 +50,7 @@ public class Server {
         Spark.awaitStop();
     }
     private void exceptionHandler(DataAccessException ex, Request req, Response res) {
-        res.status(ex.StatusCode());
+        res.status(ex.getStatusCode());
         res.body(ex.toJson());
     }
 
