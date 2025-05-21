@@ -9,4 +9,7 @@ public class GameDAO {
     public void clear(){
         games.clear();
     }
+    public ArrayList<GameData> listGames(){
+        return games;
+    }
 }

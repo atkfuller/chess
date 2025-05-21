@@ -7,6 +7,8 @@ import dataaccess.UserDAO;
 
 import model.AuthData;
 import model.UserData;
+
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -53,6 +55,13 @@ public class UserServices {
         }
         authAccess.deleteAuth(data);
     }
+    public ListGameResult listGame(ListGameRequest request)throws DataAccessException {
+        AuthData data=authAccess.getAuth(request.authToken());
+        if(data==null){
+            throw new DataAccessException(401, "Error: unauthorized");
+        }
+        return new ListGameResult(gameAccess.listGames());
+    }
     public void clear(){
         userAccess.clear();
         authAccess.clear();
@@ -80,6 +89,5 @@ public class UserServices {
     public GameDAO getGameAccess() {
         return gameAccess;
     }
-    //public LoginResult login(LoginRequest loginRequest) {}
-    //public void logout(LogoutRequest logoutRequest) {}
+
 }
