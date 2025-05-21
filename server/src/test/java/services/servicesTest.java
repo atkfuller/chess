@@ -33,12 +33,9 @@ class servicesTest {
             service.clear();
         }
         /*test to implement
-            logout
-            logout unauthroized
-            list games
-            list games unauthroized
             create game
             create game unauthorized
+            create game bad request
             join game
             join game unauthroized
          */
@@ -154,6 +151,44 @@ class servicesTest {
         AuthData data=accessAuth.getAuthByUsername(user.username());
         DataAccessException ex = assertThrows(DataAccessException.class, () -> {
             service.listGame(new ListGameRequest("wrong token"));
+        });
+
+        assertEquals("Error: unauthorized", ex.getMessage());
+
+    }
+    @Test
+    void createGameCorrect() throws DataAccessException{
+        populateUsers();
+        ArrayList<UserData> users = service.getUsers();
+        UserData user = users.get(2);
+        AuthData data = accessAuth.getAuthByUsername(user.username());
+        CreateGameRequest request = new CreateGameRequest(data.authToken(), "myGame");
+        createGameResult result=service.createGame(request);
+        ArrayList<GameData> games= service.getGames();
+        for(GameData gData: games){
+            if(gData.gameName()=="myGame"){
+                assertSame("myGame", gData.gameName());
+            }
+        }
+    }
+    void createGameBad() throws DataAccessException{
+        populateUsers();
+        ArrayList<UserData> users = service.getUsers();
+        UserData user = users.get(2);
+        AuthData data = accessAuth.getAuthByUsername(user.username());
+        CreateGameRequest request = new CreateGameRequest(data.authToken(), null);
+        DataAccessException ex = assertThrows(DataAccessException.class, () -> {
+            service.createGame(request);
+        });
+
+        assertEquals("Error: bad request", ex.getMessage());
+
+    }
+    void createGameUnAuthorized() throws DataAccessException{
+        populateUsers();
+        CreateGameRequest request = new CreateGameRequest("bad token", "myGame");
+        DataAccessException ex = assertThrows(DataAccessException.class, () -> {
+            service.createGame(request);
         });
 
         assertEquals("Error: unauthorized", ex.getMessage());
