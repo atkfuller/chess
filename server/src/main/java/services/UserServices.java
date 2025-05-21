@@ -8,6 +8,7 @@ import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class UserServices {
@@ -31,6 +32,26 @@ public class UserServices {
             authAccess.createAuth(auth);
             return new RegisterResult(registerRequest.username(), auth.authToken());
         }
+    }
+    public LoginResult login(LoginRequest request)throws DataAccessException{
+        if(request.username()==null| request.password()==null){
+            throw new DataAccessException(400, "Error: bad request");
+        }
+        UserData user=userAccess.getUser(request.username());
+        if(user==null|!user.checkPassword(request.password())){
+            throw new DataAccessException(401, "Error: unauthorized");
+        }
+        String token=generateToken();
+        AuthData auth= new AuthData(token, request.username());
+        authAccess.createAuth(auth);
+        return new LoginResult(request.username(), token);
+    }
+    public void logout(LogoutRequest request) throws DataAccessException{
+        AuthData data=authAccess.getAuth(request.authToken());
+        if(data==null){
+            throw new DataAccessException(401, "Error: unauthroized");
+        }
+        authAccess.deleteAuth(data);
     }
     public void clear(){
         userAccess.clear();

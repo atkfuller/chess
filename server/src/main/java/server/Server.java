@@ -2,9 +2,7 @@ package server;
 
 import dataaccess.DataAccessException;
 import com.google.gson.Gson;
-import services.RegisterRequest;
-import services.RegisterResult;
-import services.UserServices;
+import services.*;
 import spark.*;
 
 import javax.xml.crypto.Data;
@@ -27,6 +25,8 @@ public class Server {
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::registerUser);
         Spark.delete("/db", this::clear);
+        Spark.post("/session", this::loginUser);
+
         Spark.exception(DataAccessException.class, this::exceptionHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
@@ -48,9 +48,15 @@ public class Server {
         RegisterResult result=service.register(registerRequest);
         return new Gson().toJson(result);
     }
+    private Object loginUser(Request req, Response res) throws DataAccessException{
+        LoginRequest loginRequest= new Gson().fromJson(req.body(), LoginRequest.class);
+        LoginResult result=service.login(loginRequest);
+        return new Gson().toJson(result);
+    }
     private Object clear(Request req, Response res){
         service.clear();
         return new Gson().toJson(Map.of("message", "Database cleared."));
     }
+
 
 }
