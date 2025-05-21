@@ -1,5 +1,6 @@
 package services;
 
+import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
@@ -7,13 +8,13 @@ import model.*;
 
 import java.util.Objects;
 
-public class GameService {
+public class GameServices {
     private final GameDAO gameAccess;
     private final AuthDAO authAccess;
 
-    public GameService() {
-        this.gameAccess = new GameDAO();
-        this.authAccess = new AuthDAO();
+    public GameServices(AuthDAO authDAO, GameDAO gameDAO) {
+        this.authAccess = authDAO;
+        this.gameAccess = gameDAO;
     }
 
     public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {
@@ -30,8 +31,8 @@ public class GameService {
         return new CreateGameResult(gData.gameID());
     }
 
-    public ListGameResult listGames(String authToken) throws DataAccessException {
-        AuthData data = authAccess.getAuth(authToken);
+    public ListGameResult listGames(ListGameRequest request) throws DataAccessException {
+        AuthData data = authAccess.getAuth(request.authToken());
         if (data == null) {
             throw new DataAccessException(401, "Error: unauthorized");
         }
@@ -55,5 +56,8 @@ public class GameService {
 
     public void updateGame(int gameID, ChessGame updatedGame) throws DataAccessException {
         gameAccess.updateGame(gameID, updatedGame);
+    }
+    public GameDAO getGameAccess(){
+        return gameAccess;
     }
 }

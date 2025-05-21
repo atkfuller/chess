@@ -15,12 +15,12 @@ import java.util.UUID;
 
 public class UserServices {
     private final UserDAO userAccess;
-    private final AuthDAO authAccess;
+    private final AuthDAO authAccess;;
     private final GameDAO gameAccess;
-    public UserServices(){
-        userAccess= new UserDAO();
-        authAccess= new AuthDAO();
-        gameAccess= new GameDAO();
+    public UserServices(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) {
+        this.userAccess = userDAO;
+        this.authAccess = authDAO;
+        this.gameAccess = gameDAO;
     }
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         if(registerRequest.username()==null| registerRequest.password()==null|registerRequest.email()==null){
@@ -61,42 +61,7 @@ public class UserServices {
         }
         authAccess.deleteAuth(data);
     }
-    public ListGameResult listGame(ListGameRequest request)throws DataAccessException {
-        AuthData data=authAccess.getAuth(request.authToken());
-        if(data==null){
-            throw new DataAccessException(401, "Error: unauthorized");
-        }
-        return new ListGameResult(gameAccess.listGames());
-    }
-    public void clear(){
-        userAccess.clear();
-        authAccess.clear();
-        gameAccess.clear();
-    }
-    public CreateGameResult createGame(CreateGameRequest request)throws DataAccessException{
-        if(request.gameName()==null){
-            throw new DataAccessException(400, "Error: bad request");
-        }
-        AuthData aData=authAccess.getAuth(request.authToken());
-        if(aData==null){
-            throw new DataAccessException(401, "Error: unauthorized");
-        }
-        GameData gData= gameAccess.createGame(request.gameName());
-        return new CreateGameResult(gData.gameID());
 
-    }
-    public void joinGame(JoinGameRequest request)throws DataAccessException{
-        if(request.gameID()==null|request.playerColor()==null|(!Objects.equals(request.playerColor(), "BLACK") && !Objects.equals(request.playerColor(), "WHITE"))){
-            throw new DataAccessException(400, "Error: bad request");
-        }
-        AuthData aData=authAccess.getAuth(request.authToken());
-        if(aData==null){
-            throw new DataAccessException(401, "Error: unauthorized");
-        }
-        GameData gData= gameAccess.getGame(request.gameID());
-        gameAccess.joinGame(request.playerColor(),gData,aData.username());
-
-    }
 
 
     public static String generateToken() {
@@ -108,9 +73,6 @@ public class UserServices {
     public ArrayList<AuthData> getAuth(){
         return authAccess.getAuthencation();
     }
-    public ArrayList<GameData> getGames(){
-        return gameAccess.listGames();
-    }
 
     public UserDAO getUserAccess() {
         return userAccess;
@@ -120,8 +82,6 @@ public class UserServices {
         return authAccess;
     }
 
-    public GameDAO getGameAccess() {
-        return gameAccess;
-    }
+
 
 }

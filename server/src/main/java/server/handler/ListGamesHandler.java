@@ -1,6 +1,7 @@
 package server.handler;
 
 import com.google.gson.Gson;
+import services.GameServices;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -9,9 +10,9 @@ import model.ListGameRequest;
 import model.ListGameResult;
 
 public class ListGamesHandler implements Route {
-    private final UserServices service;
+    private final GameServices service;
 
-    public ListGamesHandler(UserServices service) {
+    public ListGamesHandler(GameServices service) {
         this.service = service;
     }
 
@@ -19,7 +20,7 @@ public class ListGamesHandler implements Route {
     public Object handle(Request req, Response res) throws Exception {
         String authToken = req.headers("authorization");
         ListGameRequest request = new ListGameRequest(authToken);
-        ListGameResult result = service.listGame(request);
+        ListGameResult result = service.listGames(request);
         res.type("application/json");
         return new Gson().toJson(result);
     }

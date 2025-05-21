@@ -1,6 +1,7 @@
 package server.handler;
 
 import com.google.gson.Gson;
+import services.GameServices;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -10,9 +11,9 @@ import model.JoinGameRequest;
 import java.util.Map;
 
 public class JoinGameHandler implements Route {
-    private final UserServices service;
+    private final GameServices service;
 
-    public JoinGameHandler(UserServices service) {
+    public JoinGameHandler(GameServices service) {
         this.service = service;
     }
 
