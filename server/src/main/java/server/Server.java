@@ -26,6 +26,11 @@ public class Server {
         Spark.post("/user", this::registerUser);
         Spark.delete("/db", this::clear);
         Spark.post("/session", this::loginUser);
+        Spark.delete("/session", this::logoutUser);
+        Spark.get("/game", this::listGames);
+        Spark.post("/game", this::createGame);
+        Spark.put("/game", this::joinGame);
+
 
         Spark.exception(DataAccessException.class, this::exceptionHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint 
@@ -56,6 +61,26 @@ public class Server {
     private Object clear(Request req, Response res){
         service.clear();
         return new Gson().toJson(Map.of("message", "Database cleared."));
+    }
+    private Object logoutUser(Request req, Response res) throws DataAccessException{
+        LogoutRequest request= new Gson().fromJson(req.body(), LogoutRequest.class);
+        service.logout(request);
+        return new Gson().toJson(Map.of("message", "loggedOut User"));
+    }
+    private Object listGames(Request req, Response res) throws DataAccessException{
+        ListGameRequest request= new Gson().fromJson(req.body(), ListGameRequest.class);
+        ListGameResult result= service.listGame(request);
+        return new Gson().toJson(result);
+    }
+    private Object createGame(Request req, Response res) throws DataAccessException{
+        CreateGameRequest request= new Gson().fromJson(req.body(), CreateGameRequest.class);
+        createGameResult result= service.createGame(request);
+        return new Gson().toJson(result);
+    }
+    private Object joinGame(Request req, Response res) throws DataAccessException{
+        JoinGameRequest request= new Gson().fromJson(req.body(), JoinGameRequest.class);
+        service.joinGame(request);
+        return new Gson().toJson(Map.of("message", "joined game"));
     }
 
 

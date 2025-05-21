@@ -4,6 +4,7 @@ import org.eclipse.jetty.server.Authentication;
 
 import model.UserData;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class UserDAO {
     private ArrayList<UserData> users=new ArrayList<UserData>();
@@ -15,7 +16,7 @@ public class UserDAO {
             return null;
         }
         for(UserData data: users){
-            if(data.username()==username){
+            if(Objects.equals(data.username(), username)){
                 return data;
             }
         }

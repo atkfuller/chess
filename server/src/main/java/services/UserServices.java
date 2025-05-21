@@ -24,9 +24,12 @@ public class UserServices {
         gameAccess= new GameDAO();
     }
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
-       UserData user=userAccess.getUser(registerRequest.username());
+        if(registerRequest.username()==null| registerRequest.password()==null|registerRequest.email()==null){
+            throw new DataAccessException(400, "Error: bad request");
+        }
+        UserData user=userAccess.getUser(registerRequest.username());
         if(user!=null){
-            throw new DataAccessException(403, "already taken username");
+            throw new DataAccessException(403, "Error: already taken username");
         }
         else{
             user= new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
@@ -41,7 +44,10 @@ public class UserServices {
             throw new DataAccessException(400, "Error: bad request");
         }
         UserData user=userAccess.getUser(request.username());
-        if(user==null|!user.checkPassword(request.password())){
+        if(user==null){
+            throw new DataAccessException(401, "Error: unauthorized");
+        }
+        else if(!user.checkPassword(request.password())){
             throw new DataAccessException(401, "Error: unauthorized");
         }
         String token=generateToken();
