@@ -33,13 +33,13 @@ public class GameDAO {
     public void joinGame(String color, GameData game, String username) throws DataAccessException{
         GameData data;
         if(color=="BLACK"){
-            if(game.blackUsername() == null){
+            if(game.blackUsername() != null){
                 throw new DataAccessException(403, "Error: already taken");
             }
             data= new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(),game.game());
         }
         else{
-            if(game.whiteUsername() == null){
+            if(game.whiteUsername() != null){
                 throw new DataAccessException(403, "Error: already taken");
             }
             data= new GameData(game.gameID(), username, game.blackUsername(), game.gameName(),game.game());
@@ -59,7 +59,8 @@ public class GameDAO {
     public void setGame(int id, GameData game){
         for(GameData data: games){
             if(data.gameID()==id){
-               games.add(games.indexOf(data), game);
+                games.remove(data);
+                games.add(game);
             }
         }
 
