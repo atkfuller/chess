@@ -12,6 +12,7 @@ import java.util.Map;
 
 public class Server {
     private final UserServices service;
+    private String existingAuth;
     public Server(){
         service=new UserServices();
     }
@@ -51,11 +52,13 @@ public class Server {
     private Object registerUser (Request req, Response res) throws DataAccessException{
         RegisterRequest registerRequest = new Gson().fromJson(req.body(), RegisterRequest.class);
         RegisterResult result=service.register(registerRequest);
+        existingAuth=result.authToken();
         return new Gson().toJson(result);
     }
     private Object loginUser(Request req, Response res) throws DataAccessException{
         LoginRequest loginRequest= new Gson().fromJson(req.body(), LoginRequest.class);
         LoginResult result=service.login(loginRequest);
+        existingAuth=result.authToken();
         return new Gson().toJson(result);
     }
     private Object clear(Request req, Response res){
@@ -63,17 +66,18 @@ public class Server {
         return new Gson().toJson(Map.of("message", "Database cleared."));
     }
     private Object logoutUser(Request req, Response res) throws DataAccessException{
-        LogoutRequest request= new Gson().fromJson(req.body(), LogoutRequest.class);
+        LogoutRequest request= new LogoutRequest(existingAuth);
         service.logout(request);
         return new Gson().toJson(Map.of("message", "loggedOut User"));
     }
     private Object listGames(Request req, Response res) throws DataAccessException{
-        ListGameRequest request= new Gson().fromJson(req.body(), ListGameRequest.class);
+        ListGameRequest request=new ListGameRequest(existingAuth);
         ListGameResult result= service.listGame(request);
         return new Gson().toJson(result);
     }
     private Object createGame(Request req, Response res) throws DataAccessException{
-        CreateGameRequest request= new Gson().fromJson(req.body(), CreateGameRequest.class);
+        CreateGameRequest reqRequest= new Gson().fromJson(req.body(), CreateGameRequest.class);
+        CreateGameRequest request= new CreateGameRequest(existingAuth, reqRequest.gameName());
         createGameResult result= service.createGame(request);
         return new Gson().toJson(result);
     }
