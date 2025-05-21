@@ -80,6 +80,18 @@ public class UserServices {
         return new createGameResult(gData.gameID());
 
     }
+    public void joinGame(JoinGameRequest request)throws DataAccessException{
+        if(request.gameID()==-1|request.playerColor()==null|(request.playerColor()!="BLACK"&& request.playerColor()!="WHITE")){
+            throw new DataAccessException(400, "Error: bad request");
+        }
+        AuthData aData=authAccess.getAuth(request.authToken());
+        if(aData==null){
+            throw new DataAccessException(401, "Error: unauthorized");
+        }
+        GameData gData= gameAccess.getGame(request.gameID());
+        gameAccess.joinGame(request.playerColor(),gData,aData.username());
+
+    }
 
 
     public static String generateToken() {

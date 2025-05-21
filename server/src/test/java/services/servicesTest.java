@@ -74,6 +74,7 @@ class servicesTest {
             accessGame.addGame(new GameData(8, "oliver", "paula", "Pawn Storm", new ChessGame()));
             accessGame.addGame(new GameData(9, "quentin", "rachel", "Checkmate Drill", new ChessGame()));
             accessGame.addGame(new GameData(10, "sam", "tina", "Training Match", new ChessGame()));
+            accessGame.addGame(new GameData(120, null, "tina", "newGame", new ChessGame()));
             allGames=accessGame.listGames();
 
         }
@@ -171,6 +172,7 @@ class servicesTest {
             }
         }
     }
+    @Test
     void createGameBad() throws DataAccessException{
         populateUsers();
         ArrayList<UserData> users = service.getUsers();
@@ -184,6 +186,7 @@ class servicesTest {
         assertEquals("Error: bad request", ex.getMessage());
 
     }
+    @Test
     void createGameUnAuthorized() throws DataAccessException{
         populateUsers();
         CreateGameRequest request = new CreateGameRequest("bad token", "myGame");
@@ -194,9 +197,55 @@ class servicesTest {
         assertEquals("Error: unauthorized", ex.getMessage());
 
     }
+    @Test
+    void joinGameCorrect() throws DataAccessException{
+        populateUsers();
+        ArrayList<UserData> users = service.getUsers();
+        UserData user = users.get(2);
+        AuthData data = accessAuth.getAuthByUsername(user.username());
+        JoinGameRequest request= new JoinGameRequest(data.authToken(), "WHITE", 120);
+        service.joinGame(request);
+        ArrayList<GameData> games= service.getGames();
+        GameData game= accessGame.getGame(120);
+        assertEquals(game.whiteUsername(), user.username());
 
-
-
+    }
+    @Test
+    void joinGameBad()throws DataAccessException{
+        populateUsers();
+        ArrayList<UserData> users = service.getUsers();
+        UserData user = users.get(2);
+        AuthData data = accessAuth.getAuthByUsername(user.username());
+        JoinGameRequest request= new JoinGameRequest(data.authToken(), "PURPLE", 120);
+        DataAccessException ex = assertThrows(DataAccessException.class, () -> {
+            service.joinGame(request);
+        });
+        assertEquals("Error: bad request", ex.getMessage());
+    }
+    @Test
+    void joinGameUnauthorized() throws DataAccessException{
+        populateUsers();
+        ArrayList<UserData> users = service.getUsers();
+        UserData user = users.get(2);
+        AuthData data = accessAuth.getAuthByUsername(user.username());
+        JoinGameRequest request= new JoinGameRequest("bad token", "WHITE", 120);
+        DataAccessException ex = assertThrows(DataAccessException.class, () -> {
+            service.joinGame(request);
+        });
+        assertEquals("Error: unauthorized", ex.getMessage());
+    }
+    @Test
+    void joinGameTaken()throws DataAccessException{
+        populateUsers();
+        ArrayList<UserData> users = service.getUsers();
+        UserData user = users.get(2);
+        AuthData data = accessAuth.getAuthByUsername(user.username());
+        JoinGameRequest request= new JoinGameRequest(data.authToken(), "BLACK", 120);
+        DataAccessException ex = assertThrows(DataAccessException.class, () -> {
+            service.joinGame(request);
+        });
+        assertEquals("Error: already taken", ex.getMessage());
+    }
 
         /*
         @Test
