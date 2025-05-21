@@ -2,6 +2,7 @@ package services;
 
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.AuthData;
 import org.eclipse.jetty.server.Authentication;
@@ -20,7 +21,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class servicesTest {
         static final UserServices service = new UserServices();
-
+        static UserDAO accessUser;
+        static AuthDAO accessAuth;
+        static GameDAO accessGame;
         @BeforeEach
         void clear() throws DataAccessException {
             service.clear();
@@ -57,7 +60,9 @@ class servicesTest {
             res = service.register(new RegisterRequest("zli", "123Abc!", "zhen@example.cn"));
             res = service.register(new RegisterRequest("sanders", "qwerty007", "sandy@example.co"));
             res = service.register(new RegisterRequest("lwilson", "wilson@pass", "laura@example.us"));
-
+            accessUser=service.getUserAccess();
+            accessAuth=service.getAuthAccess();
+            accessGame=service.getGameAccess();
         }
         @Test
         void alreadyTaken() throws DataAccessException{
@@ -74,7 +79,7 @@ class servicesTest {
         populateUsers();
         ArrayList<AuthData> auth= service.getAuth();
         UserData user= new UserData("msmith", "pass789", "mary@example.org");
-        AuthData author= new AuthDAO().getAuthByUsername("msmith");
+        AuthData author= accessAuth.getAuthByUsername("msmith");
         LoginResult res= service.login(new LoginRequest("msmith", "pass789"));
         assertNotEquals(author.authToken(), res.authToken());
     }

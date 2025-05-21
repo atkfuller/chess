@@ -68,6 +68,18 @@ public class UserServices {
     public ArrayList<AuthData> getAuth(){
         return authAccess.getAuthencation();
     }
+
+    public UserDAO getUserAccess() {
+        return userAccess;
+    }
+
+    public AuthDAO getAuthAccess() {
+        return authAccess;
+    }
+
+    public GameDAO getGameAccess() {
+        return gameAccess;
+    }
     //public LoginResult login(LoginRequest loginRequest) {}
     //public void logout(LogoutRequest logoutRequest) {}
 }
