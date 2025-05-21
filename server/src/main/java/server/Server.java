@@ -12,7 +12,6 @@ import java.util.Map;
 
 public class Server {
     private final UserServices service;
-    private String existingAuth;
     public Server(){
         service=new UserServices();
     }
@@ -52,13 +51,11 @@ public class Server {
     private Object registerUser (Request req, Response res) throws DataAccessException{
         RegisterRequest registerRequest = new Gson().fromJson(req.body(), RegisterRequest.class);
         RegisterResult result=service.register(registerRequest);
-        existingAuth=result.authToken();
         return new Gson().toJson(result);
     }
     private Object loginUser(Request req, Response res) throws DataAccessException{
         LoginRequest loginRequest= new Gson().fromJson(req.body(), LoginRequest.class);
         LoginResult result=service.login(loginRequest);
-        existingAuth=result.authToken();
         return new Gson().toJson(result);
     }
     private Object clear(Request req, Response res){
@@ -66,23 +63,28 @@ public class Server {
         return new Gson().toJson(Map.of("message", "Database cleared."));
     }
     private Object logoutUser(Request req, Response res) throws DataAccessException{
-        LogoutRequest request= new LogoutRequest(existingAuth);
+        String authToken= req.headers("authorization");
+        LogoutRequest request= new LogoutRequest(authToken);
         service.logout(request);
         return new Gson().toJson(Map.of("message", "loggedOut User"));
     }
     private Object listGames(Request req, Response res) throws DataAccessException{
-        ListGameRequest request=new ListGameRequest(existingAuth);
+        String authToken= req.headers("authorization");
+        ListGameRequest request=new ListGameRequest(authToken);
         ListGameResult result= service.listGame(request);
         return new Gson().toJson(result);
     }
     private Object createGame(Request req, Response res) throws DataAccessException{
+        String authToken= req.headers("authorization");
         CreateGameRequest reqRequest= new Gson().fromJson(req.body(), CreateGameRequest.class);
-        CreateGameRequest request= new CreateGameRequest(existingAuth, reqRequest.gameName());
+        CreateGameRequest request= new CreateGameRequest(authToken, reqRequest.gameName());
         createGameResult result= service.createGame(request);
         return new Gson().toJson(result);
     }
     private Object joinGame(Request req, Response res) throws DataAccessException{
-        JoinGameRequest request= new Gson().fromJson(req.body(), JoinGameRequest.class);
+        String authToken= req.headers("authorization");
+        JoinGameRequest reqRequest= new Gson().fromJson(req.body(), JoinGameRequest.class);
+        JoinGameRequest request= new JoinGameRequest(authToken,reqRequest.playerColor(),reqRequest.gameID());
         service.joinGame(request);
         return new Gson().toJson(Map.of("message", "joined game"));
     }

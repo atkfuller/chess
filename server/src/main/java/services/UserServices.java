@@ -12,6 +12,7 @@ import model.UserData;
 import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 public class UserServices {
@@ -87,7 +88,7 @@ public class UserServices {
 
     }
     public void joinGame(JoinGameRequest request)throws DataAccessException{
-        if(request.gameID()==-1|request.playerColor()==null|(request.playerColor()!="BLACK"&& request.playerColor()!="WHITE")){
+        if(request.gameID()==null|request.playerColor()==null|(!Objects.equals(request.playerColor(), "BLACK") && !Objects.equals(request.playerColor(), "WHITE"))){
             throw new DataAccessException(400, "Error: bad request");
         }
         AuthData aData=authAccess.getAuth(request.authToken());

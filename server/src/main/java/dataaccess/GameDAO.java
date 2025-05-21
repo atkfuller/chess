@@ -3,10 +3,8 @@ package dataaccess;
 import chess.ChessGame;
 import model.GameData;
 import model.UserData;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+
+import java.util.*;
 
 public class GameDAO {
     private ArrayList<GameData> games=new ArrayList<GameData>();
@@ -32,7 +30,7 @@ public class GameDAO {
 
     public void joinGame(String color, GameData game, String username) throws DataAccessException{
         GameData data;
-        if(color=="BLACK"){
+        if(Objects.equals(color, "BLACK")){
             if(game.blackUsername() != null){
                 throw new DataAccessException(403, "Error: already taken");
             }
