@@ -1,4 +1,4 @@
-package server.handlers;
+package server.handler;
 
 import com.google.gson.Gson;
 import spark.Request;

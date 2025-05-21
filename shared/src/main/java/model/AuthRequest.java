@@ -1,4 +1,4 @@
-package services;
+package model;
 
 public record AuthRequest(String authToken) {
 }

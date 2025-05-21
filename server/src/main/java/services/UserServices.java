@@ -5,9 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 
-import model.AuthData;
-import model.GameData;
-import model.UserData;
+import model.*;
 
 import javax.xml.crypto.Data;
 import java.util.ArrayList;
@@ -75,7 +73,7 @@ public class UserServices {
         authAccess.clear();
         gameAccess.clear();
     }
-    public createGameResult createGame(CreateGameRequest request)throws DataAccessException{
+    public CreateGameResult createGame(CreateGameRequest request)throws DataAccessException{
         if(request.gameName()==null){
             throw new DataAccessException(400, "Error: bad request");
         }
@@ -84,7 +82,7 @@ public class UserServices {
             throw new DataAccessException(401, "Error: unauthorized");
         }
         GameData gData= gameAccess.createGame(request.gameName());
-        return new createGameResult(gData.gameID());
+        return new CreateGameResult(gData.gameID());
 
     }
     public void joinGame(JoinGameRequest request)throws DataAccessException{
