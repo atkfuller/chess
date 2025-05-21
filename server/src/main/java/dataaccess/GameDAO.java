@@ -12,4 +12,7 @@ public class GameDAO {
     public ArrayList<GameData> listGames(){
         return games;
     }
+    public void addGame(GameData data){
+        games.add(data);
+    }
 }

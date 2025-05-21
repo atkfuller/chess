@@ -1,10 +1,12 @@
 package services;
 
+import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.AuthData;
+import model.GameData;
 import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,7 @@ import javax.xml.crypto.Data;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,6 +27,7 @@ class servicesTest {
         static UserDAO accessUser;
         static AuthDAO accessAuth;
         static GameDAO accessGame;
+        static ArrayList<GameData> allGames;
         @BeforeEach
         void clear() throws DataAccessException {
             service.clear();
@@ -63,6 +67,18 @@ class servicesTest {
             accessUser=service.getUserAccess();
             accessAuth=service.getAuthAccess();
             accessGame=service.getGameAccess();
+            accessGame.addGame(new GameData(1, "alice", "bob", "Classic Match", new ChessGame()));
+            accessGame.addGame(new GameData(2, "charlie", "diana", "Opening Practice", new ChessGame()));
+            accessGame.addGame(new GameData(3, "edward", "fiona", "Blitz Showdown", new ChessGame()));
+            accessGame.addGame(new GameData(4, "george", "harriet", "Endgame Tactics", new ChessGame()));
+            accessGame.addGame(new GameData(5, "ivan", "julia", "Queen's Gambit", new ChessGame()));
+            accessGame.addGame(new GameData(6, "kevin", "laura", "King's Defense", new ChessGame()));
+            accessGame.addGame(new GameData(7, "maria", "nathan", "Rook Battle", new ChessGame()));
+            accessGame.addGame(new GameData(8, "oliver", "paula", "Pawn Storm", new ChessGame()));
+            accessGame.addGame(new GameData(9, "quentin", "rachel", "Checkmate Drill", new ChessGame()));
+            accessGame.addGame(new GameData(10, "sam", "tina", "Training Match", new ChessGame()));
+            allGames=accessGame.listGames();
+
         }
         @Test
         void alreadyTaken() throws DataAccessException{
@@ -97,11 +113,11 @@ class servicesTest {
     }
     @Test
     void logoutCorrect() throws DataAccessException{
-            populateUsers();
-        ArrayList< AuthData> auth= service.getAuth();
-        ArrayList<UserData> users= service.getUsers();
-        UserData user= users.get(4);
-        AuthData data=accessAuth.getAuthByUsername(user.username());
+        populateUsers();
+        ArrayList<AuthData> auth = service.getAuth();
+        ArrayList<UserData> users = service.getUsers();
+        UserData user = users.get(4);
+        AuthData data = accessAuth.getAuthByUsername(user.username());
         service.logout(new LogoutRequest(data.authToken()));
         assertFalse(auth.contains(data));
 
@@ -118,6 +134,32 @@ class servicesTest {
 
         assertEquals("Error: unauthorized", ex.getMessage());
     }
+    @Test
+    void listGameCorrect() throws DataAccessException{
+        populateUsers();
+        ArrayList< AuthData> auth= service.getAuth();
+        ArrayList<UserData> users= service.getUsers();
+        UserData user= users.get(5);
+        AuthData data=accessAuth.getAuthByUsername(user.username());
+        ListGameResult list=service.listGame(new ListGameRequest(data.authToken()));
+        assertEquals(list.games(), allGames);
+
+    }
+    @Test
+    void listGameWrong() throws DataAccessException{
+        populateUsers();
+        ArrayList< AuthData> auth= service.getAuth();
+        ArrayList<UserData> users= service.getUsers();
+        UserData user= users.get(5);
+        AuthData data=accessAuth.getAuthByUsername(user.username());
+        DataAccessException ex = assertThrows(DataAccessException.class, () -> {
+            service.listGame(new ListGameRequest("wrong token"));
+        });
+
+        assertEquals("Error: unauthorized", ex.getMessage());
+
+    }
+
 
 
 
