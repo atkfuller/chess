@@ -75,4 +75,12 @@ public class MemoryGameDAO implements GameDAO {
         games.add(data);
         return data;
     }
+    public static int generateUniqueID() {
+        int id;
+        do {
+            id = MemoryGameDAO.RAND.nextInt(9000);
+        } while (MemoryGameDAO.gameIDs.contains(id));
+        MemoryGameDAO.gameIDs.add(id);
+        return id;
+    }
 }

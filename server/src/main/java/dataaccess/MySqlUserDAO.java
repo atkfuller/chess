@@ -2,6 +2,7 @@ package dataaccess;
 
 import com.google.gson.Gson;
 import model.UserData;
+import org.eclipse.jetty.server.Authentication;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -88,10 +89,11 @@ public class MySqlUserDAO implements UserDAO{
         }
     }
     private UserData readUser(ResultSet rs) throws SQLException {
-        var id = rs.getInt("id");
-        var json = rs.getString("json");
-        var user = new Gson().fromJson(json, UserData.class);
-        return user;
+        var username= rs.getString("username");
+        var hashedPassword= rs.getString("password");
+        var email= rs.getString("email");
+        UserData newUser=new UserData(username,hashedPassword,email);
+        return newUser;
     }
 
     private final String[] createStatements = {

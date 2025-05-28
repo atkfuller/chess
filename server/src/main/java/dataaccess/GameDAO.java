@@ -6,22 +6,14 @@ import model.GameData;
 import java.util.ArrayList;
 
 public interface GameDAO {
-    static int generateUniqueID() {
-        int id;
-        do {
-            id = MemoryGameDAO.RAND.nextInt(9000);
-        } while (MemoryGameDAO.gameIDs.contains(id));
-        MemoryGameDAO.gameIDs.add(id);
-        return id;
-    }
 
-    void clear();
+    void clear() throws DataAccessException;
 
-    ArrayList<GameData> listGames();
+    ArrayList<GameData> listGames() throws DataAccessException;
 
-    void addGame(GameData data);
+    void addGame(GameData data) throws DataAccessException;
 
-    GameData getGame(int id);
+    GameData getGame(int id) throws DataAccessException;
 
     void joinGame(String color, GameData game, String username) throws DataAccessException;
 
@@ -29,5 +21,5 @@ public interface GameDAO {
 
     void setGame(int id, GameData game);
 
-    GameData createGame(String gameName);
+    GameData createGame(String gameName) throws DataAccessException;
 }
