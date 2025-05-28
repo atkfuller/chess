@@ -1,10 +1,10 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.AuthDAO;
+import dataaccess.MemoryAuthDAO;
 import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import dataaccess.MemoryGameDAO;
+import dataaccess.MemoryUserDAO;
 import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,16 +17,16 @@ class ServicesTest {
         private UserServices userService;
         private GameServices gameService;
         private  ClearService clearService;
-        private UserDAO accessUser;
-        private AuthDAO accessAuth;
-        private GameDAO accessGame;
+        private MemoryUserDAO accessUser;
+        private MemoryAuthDAO accessAuth;
+        private MemoryGameDAO accessGame;
         private ArrayList<GameData> allGames;
     @BeforeEach
     void setUp() throws DataAccessException {
         // Create new DAO instances for each test
-        accessUser = new UserDAO();
-        accessAuth = new AuthDAO();
-        accessGame = new GameDAO();
+        accessUser = new MemoryUserDAO();
+        accessAuth = new MemoryAuthDAO();
+        accessGame = new MemoryGameDAO();
 
         // Inject shared DAOs into all services
         userService = new UserServices(accessUser, accessAuth, accessGame);

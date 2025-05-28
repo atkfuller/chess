@@ -1,20 +1,20 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.AuthDAO;
+import dataaccess.MemoryAuthDAO;
 import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
+import dataaccess.MemoryGameDAO;
 import model.*;
 
 import java.util.Objects;
 
 public class GameServices {
-    private final GameDAO gameAccess;
-    private final AuthDAO authAccess;
+    private final MemoryGameDAO gameAccess;
+    private final MemoryAuthDAO authAccess;
 
-    public GameServices(AuthDAO authDAO, GameDAO gameDAO) {
-        this.authAccess = authDAO;
-        this.gameAccess = gameDAO;
+    public GameServices(MemoryAuthDAO memoryAuthDAO, MemoryGameDAO memoryGameDAO) {
+        this.authAccess = memoryAuthDAO;
+        this.gameAccess = memoryGameDAO;
     }
 
     public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {
@@ -57,7 +57,7 @@ public class GameServices {
     public void updateGame(int gameID, ChessGame updatedGame) throws DataAccessException {
         gameAccess.updateGame(gameID, updatedGame);
     }
-    public GameDAO getGameAccess(){
+    public MemoryGameDAO getGameAccess(){
         return gameAccess;
     }
 }

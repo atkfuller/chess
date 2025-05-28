@@ -1,9 +1,9 @@
 package service;
 
-import dataaccess.AuthDAO;
+import dataaccess.MemoryAuthDAO;
 import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import dataaccess.MemoryGameDAO;
+import dataaccess.MemoryUserDAO;
 
 import model.*;
 
@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class UserServices {
-    private final UserDAO userAccess;
-    private final AuthDAO authAccess;;
-    private final GameDAO gameAccess;
-    public UserServices(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) {
-        this.userAccess = userDAO;
-        this.authAccess = authDAO;
-        this.gameAccess = gameDAO;
+    private final MemoryUserDAO userAccess;
+    private final MemoryAuthDAO authAccess;;
+    private final MemoryGameDAO gameAccess;
+    public UserServices(MemoryUserDAO memoryUserDAO, MemoryAuthDAO memoryAuthDAO, MemoryGameDAO memoryGameDAO) {
+        this.userAccess = memoryUserDAO;
+        this.authAccess = memoryAuthDAO;
+        this.gameAccess = memoryGameDAO;
     }
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         if(registerRequest.username()==null| registerRequest.password()==null|registerRequest.email()==null){
@@ -71,11 +71,11 @@ public class UserServices {
         return authAccess.getAuthencation();
     }
 
-    public UserDAO getUserAccess() {
+    public MemoryUserDAO getUserAccess() {
         return userAccess;
     }
 
-    public AuthDAO getAuthAccess() {
+    public MemoryAuthDAO getAuthAccess() {
         return authAccess;
     }
 
