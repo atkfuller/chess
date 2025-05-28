@@ -1,20 +1,18 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.MemoryGameDAO;
+import dataaccess.*;
 import model.*;
 
 import java.util.Objects;
 
 public class GameServices {
-    private final MemoryGameDAO gameAccess;
-    private final MemoryAuthDAO authAccess;
+    private final GameDAO gameAccess;
+    private final AuthDAO authAccess;
 
-    public GameServices(MemoryAuthDAO memoryAuthDAO, MemoryGameDAO memoryGameDAO) {
-        this.authAccess = memoryAuthDAO;
-        this.gameAccess = memoryGameDAO;
+    public GameServices(AuthDAO authDAO, GameDAO gameDAO) {
+        this.authAccess = authDAO;
+        this.gameAccess = gameDAO;
     }
 
     public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {

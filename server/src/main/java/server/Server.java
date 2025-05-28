@@ -1,9 +1,6 @@
 package server;
 
-import dataaccess.MemoryAuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import server.handler.*;
 import service.*;
 import spark.*;
@@ -14,13 +11,14 @@ public class Server {
     private final ClearService clearService;
 
     public Server() {
-        MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
-        MemoryAuthDAO memoryAuthDAO = new MemoryAuthDAO();
-        MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
+        IDAOsProvider provider;
+        UserDAO userDAO = provider.getUserDAO();
+        AuthDAO authDAO = provider.getAuthDAO();
+        GameDAO gameDAO = provider.getGameDAO();
 
-        this.userService = new UserServices(memoryUserDAO, memoryAuthDAO, memoryGameDAO);
-        this.gameService = new GameServices(memoryAuthDAO, memoryGameDAO);
-        this.clearService = new ClearService(memoryUserDAO, memoryAuthDAO, memoryGameDAO);
+        this.userService = new UserServices(userDAO, authDAO, gameDAO);
+        this.gameService = new GameServices(authDAO, gameDAO);
+        this.clearService = new ClearService(userDAO, authDAO, gameDAO);
     }
 
     public int run(int desiredPort) {
