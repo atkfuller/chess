@@ -175,12 +175,12 @@ public class MySqlGameDAO implements GameDAO{
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  games (
-              `gameID`int identity(1,1) not null,
-              `whiteUsername` varchar(256),
-              'blackUsername' varchar(256),
-              'gameName' varchar(256) not null,
-              'game', varchar(256) not null,
-              PRIMARY KEY (`gameID`)
+              gameIDint identity(1,1) not null,
+              whiteUsername varchar(256),
+              blackUsername varchar(256),
+              gameName varchar(256) not null,
+              game, varchar(256) not null,
+              PRIMARY KEY (gameID)
             ) 
             """
     };

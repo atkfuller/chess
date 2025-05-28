@@ -20,7 +20,11 @@ public class Server {
         this.clearService = new ClearService(userDAO, authDAO, gameDAO);
     }
     public Server() {
-       new Server(new MemoryDAOsProvider());
+        try {
+            new Server(new MySqlDAOsProvider());
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public int run(int desiredPort) {

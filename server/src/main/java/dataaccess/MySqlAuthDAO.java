@@ -134,9 +134,9 @@ public class MySqlAuthDAO implements AuthDAO{
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  authentication (
-              `authToken` varchar(256) NOT NULL,
-              `username` varchar(256) NOT NULL,
-              PRIMARY KEY (`username`)
+              authToken varchar(256) NOT NULL,
+              username varchar(256) NOT NULL,
+              PRIMARY KEY (username)
             ) 
             """
     };

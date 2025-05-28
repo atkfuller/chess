@@ -118,10 +118,10 @@ public class MySqlUserDAO implements UserDAO{
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  users (
-              `username` varchar(256) NOT NULL,
-              `password` varchar(256) NOT NULL,
-              'email' varchar(256) NOT NULL UNIQUE,
-              PRIMARY KEY (`username`)
+              username varchar(256) NOT NULL,
+              password varchar(256) NOT NULL,
+              email varchar(256) NOT NULL UNIQUE,
+              PRIMARY KEY (username)
             ) 
             """
     };
