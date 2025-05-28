@@ -1,6 +1,7 @@
 package server.handler;
 
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import service.ClearService;
 import spark.Request;
 import spark.Response;
@@ -16,7 +17,7 @@ public class ClearHandler implements Route {
     }
 
     @Override
-    public Object handle(Request req, Response res) {
+    public Object handle(Request req, Response res) throws DataAccessException {
         service.clearAll();
         res.type("application/json");
         return new Gson().toJson(Map.of("message", "Database cleared."));

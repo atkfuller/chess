@@ -55,8 +55,6 @@ public class GameServices {
     public void updateGame(int gameID, ChessGame updatedGame) throws DataAccessException {
         gameAccess.updateGame(gameID, updatedGame);
     }
-    public MemoryGameDAO getGameAccess(){
-        return gameAccess;
-    }
+
 
 }

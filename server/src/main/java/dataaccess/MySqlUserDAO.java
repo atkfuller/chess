@@ -1,11 +1,13 @@
 package dataaccess;
 
 import com.google.gson.Gson;
+import model.GameData;
 import model.UserData;
 import org.eclipse.jetty.server.Authentication;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -47,6 +49,23 @@ public class MySqlUserDAO implements UserDAO{
                 ps.setString(2,user.hashedPasword());
                 ps.setString(3,user.email());
                 ps.executeUpdate(statement);
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
+        }
+    }
+    @Override
+    public ArrayList<UserData> getUsers() throws DataAccessException{
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, password, email FROM users";
+            try (var ps = conn.prepareStatement(statement)) {
+                ArrayList<UserData> returnList= new ArrayList<UserData>();
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        returnList.add(readUser(rs));
+                    }
+                }
+                return returnList;
             }
         } catch (Exception e) {
             throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));

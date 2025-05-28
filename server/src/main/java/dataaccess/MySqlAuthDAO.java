@@ -6,6 +6,7 @@ import model.UserData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -82,6 +83,12 @@ public class MySqlAuthDAO implements AuthDAO{
             throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
         }
     }
+
+    @Override
+    public ArrayList<AuthData> getAuthencation() {
+        return null;
+    }
+
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {

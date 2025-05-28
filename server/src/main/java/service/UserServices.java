@@ -68,20 +68,13 @@ public class UserServices {
     public static String generateToken() {
         return UUID.randomUUID().toString();
     }
-    public ArrayList<UserData> getUsers(){
+    public ArrayList<UserData> getUsers() throws DataAccessException {
         return userAccess.getUsers();
     }
     public ArrayList<AuthData> getAuth(){
         return authAccess.getAuthencation();
     }
 
-    public MemoryUserDAO getUserAccess() {
-        return userAccess;
-    }
-
-    public MemoryAuthDAO getAuthAccess() {
-        return authAccess;
-    }
 
 
 

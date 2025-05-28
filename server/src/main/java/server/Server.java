@@ -6,12 +6,11 @@ import service.*;
 import spark.*;
 
 public class Server {
-    private final UserServices userService;
-    private final GameServices gameService;
-    private final ClearService clearService;
+    private UserServices userService;
+    private GameServices gameService;
+    private ClearService clearService;
 
-    public Server() {
-        IDAOsProvider provider;
+    public Server(IDAOsProvider provider) {
         UserDAO userDAO = provider.getUserDAO();
         AuthDAO authDAO = provider.getAuthDAO();
         GameDAO gameDAO = provider.getGameDAO();
@@ -19,6 +18,9 @@ public class Server {
         this.userService = new UserServices(userDAO, authDAO, gameDAO);
         this.gameService = new GameServices(authDAO, gameDAO);
         this.clearService = new ClearService(userDAO, authDAO, gameDAO);
+    }
+    public Server() {
+       new Server(new MemoryDAOsProvider());
     }
 
     public int run(int desiredPort) {
