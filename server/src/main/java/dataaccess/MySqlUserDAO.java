@@ -28,7 +28,7 @@ public class MySqlUserDAO implements UserDAO{
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return readPet(rs);
+                        return readUser(rs);
                     }
                 }
             }
@@ -54,6 +54,7 @@ public class MySqlUserDAO implements UserDAO{
             throw new DataAccessException(500, String.format("Unable to configure database: %s", ex.getMessage()));
         }
     }
+
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
@@ -77,11 +78,11 @@ public class MySqlUserDAO implements UserDAO{
             throw new DataAccessException(500, String.format("unable to update database: %s, %s", statement, e.getMessage()));
         }
     }
-    private UserData readPet(ResultSet rs) throws SQLException {
+    private UserData readUser(ResultSet rs) throws SQLException {
         var id = rs.getInt("id");
         var json = rs.getString("json");
-        var pet = new Gson().fromJson(json, UserData.class);
-        return users.setString(username);
+        var users = new Gson().fromJson(json, UserData.class);
+        return users;
     }
 
     private final String[] createStatements = {
