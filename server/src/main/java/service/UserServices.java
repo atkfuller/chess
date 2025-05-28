@@ -1,23 +1,22 @@
 package service;
 
-import dataaccess.MemoryAuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 public class UserServices {
-    private final MemoryUserDAO userAccess;
-    private final MemoryAuthDAO authAccess;;
-    private final MemoryGameDAO gameAccess;
-    public UserServices(MemoryUserDAO memoryUserDAO, MemoryAuthDAO memoryAuthDAO, MemoryGameDAO memoryGameDAO) {
-        this.userAccess = memoryUserDAO;
-        this.authAccess = memoryAuthDAO;
-        this.gameAccess = memoryGameDAO;
+    private final UserDAO userAccess;
+    private final AuthDAO authAccess;;
+    private final GameDAO gameAccess;
+    public UserServices(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) {
+        this.userAccess = userDAO;
+        this.authAccess = authDAO;
+        this.gameAccess = gameDAO;
     }
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         if(registerRequest.username()==null| registerRequest.password()==null|registerRequest.email()==null){
@@ -28,7 +27,8 @@ public class UserServices {
             throw new DataAccessException(403, "Error: already taken username");
         }
         else{
-            user= new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
+            String hashedPassword = BCrypt.hashpw(registerRequest.password(), BCrypt.gensalt());
+            user= new UserData(registerRequest.username(), hashedPassword, registerRequest.email());
             userAccess.createUser(user);
             AuthData auth= new AuthData(generateToken(), registerRequest.username());
             authAccess.createAuth(auth);
@@ -43,7 +43,7 @@ public class UserServices {
         if(user==null){
             throw new DataAccessException(401, "Error: unauthorized");
         }
-        else if(!user.checkPassword(request.password())){
+        else if(!checkPassword(user, request.password())){
             throw new DataAccessException(401, "Error: unauthorized");
         }
         String token=generateToken();
@@ -58,6 +58,10 @@ public class UserServices {
         }
         authAccess.deleteAuth(data);
     }
+    public boolean checkPassword(UserData user, String enteredPassword){
+            return BCrypt.checkpw(enteredPassword,  user.hashedPasword());
+        }
+
 
 
 

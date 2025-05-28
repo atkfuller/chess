@@ -3,7 +3,6 @@ package dataaccess;
 import com.google.gson.Gson;
 import model.UserData;
 
-import javax.xml.crypto.Data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -16,14 +15,14 @@ public class MySqlUserDAO implements UserDAO{
     }
     @Override
     public void clear() throws DataAccessException{
-        var statement="DROP COLUMN users";
+        var statement="TRUNCATE TABLE users";
         executeUpdate(statement);
     }
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, json FROM users WHERE id=?";
+            var statement = "SELECT username, FROM users WHERE username='?'";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
@@ -40,7 +39,17 @@ public class MySqlUserDAO implements UserDAO{
 
     @Override
     public void createUser(UserData user) throws DataAccessException {
-
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "INSERT INTO users (username, password, email) VALUES ('?','?','?')";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1,user.username());
+                ps.setString(2,user.hashedPasword());
+                ps.setString(3,user.email());
+                ps.executeUpdate(statement);
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
+        }
     }
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
@@ -81,8 +90,8 @@ public class MySqlUserDAO implements UserDAO{
     private UserData readUser(ResultSet rs) throws SQLException {
         var id = rs.getInt("id");
         var json = rs.getString("json");
-        var users = new Gson().fromJson(json, UserData.class);
-        return users;
+        var user = new Gson().fromJson(json, UserData.class);
+        return user;
     }
 
     private final String[] createStatements = {
