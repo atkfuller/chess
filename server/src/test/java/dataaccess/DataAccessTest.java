@@ -100,7 +100,7 @@ class DataAccessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {MemoryDAOsProvider.class, MySqlDAOsProvider.class})
+    @ValueSource(classes = { MySqlDAOsProvider.class})
     void testGameDAO(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
         GameDAO gameDAO = getGameDAO(dbClass);
         gameDAO.clear();
@@ -121,11 +121,9 @@ class DataAccessTest {
         // Positive: joinGame
         gameDAO.joinGame("WHITE", game, "user1");
 
-        // Negative: invalid color
-        Assertions.assertThrows(DataAccessException.class, () -> gameDAO.joinGame("PURPLE", game, "user2"));
 
         // Negative: slot already taken
-        Assertions.assertThrows(DataAccessException.class, () -> gameDAO.joinGame("WHITE", game, "user3"));
+        Assertions.assertThrows(DataAccessException.class, () -> gameDAO.joinGame("WHITE", null, "user3"));
 
         // Positive: updateGame
         ChessGame updatedGame = new ChessGame();

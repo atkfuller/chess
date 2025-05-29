@@ -84,12 +84,21 @@ public class MySqlGameDAO implements GameDAO{
     @Override
     public void updateGame(int gameID, ChessGame updatedGame) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement =  "UPDATE games SET game=? WHERE gameID=?";
+            var statement = "UPDATE games SET game=? WHERE gameID=?";
             var json = new Gson().toJson(updatedGame);
-            executeUpdate(statement, json, gameID);
 
-        }catch (Exception e) {
-            throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, json);
+                ps.setInt(2, gameID);
+
+                int affected = ps.executeUpdate();
+                if (affected == 0) {
+                    throw new DataAccessException(404, "No game found with the given ID to update.");
+                }
+            }
+
+        } catch (Exception e) {
+            throw new DataAccessException(500, String.format("Unable to update game: %s", e.getMessage()));
         }
     }
 
@@ -164,8 +173,8 @@ public class MySqlGameDAO implements GameDAO{
               gameID int NOT NULL AUTO_INCREMENT,
               whiteUsername varchar(256),
               blackUsername varchar(256),
-              gameName varchar(256) not null,
-              game TEXT not null,
+              gameName varchar(256) NOT NULL,
+              game TEXT NOT NULL,
               PRIMARY KEY(gameID)
             )
             """
