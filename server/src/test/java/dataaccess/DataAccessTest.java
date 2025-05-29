@@ -46,86 +46,159 @@ class DataAccessTest {
         IDAOsProvider provider=getDataAccess(databaseClass);
         return provider.getGameDAO();
     }
+
     @ParameterizedTest
     @ValueSource(classes = {MySqlDAOsProvider.class})
-    void testUserDAO(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+    void negCreateserDAO(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        UserDAO userDAO = getUserDAO(dbClass);
+        userDAO.clear();
+        UserData user = new UserData("user1", "pass", "email");
+        userDAO.createUser(user);
+        Assertions.assertThrows(DataAccessException.class, () -> userDAO.createUser(user));
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void posGetUser(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        UserDAO userDAO = getUserDAO(dbClass);
+        userDAO.clear();
+        UserData user = new UserData("user1", "pass", "email");
+        userDAO.createUser(user);
+        UserData fetched = userDAO.getUser("user1");
+        Assertions.assertEquals("user1", fetched.username());
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void negGetUser(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        UserDAO userDAO = getUserDAO(dbClass);
+        userDAO.clear();
+        UserData user = new UserData("user1", "pass", "email");
+        userDAO.createUser(user);
+        Assertions.assertNull(userDAO.getUser("ghost"));
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void posGetUsers(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        UserDAO userDAO = getUserDAO(dbClass);
+        userDAO.clear();
+        UserData user = new UserData("user1", "pass", "email");
+        userDAO.createUser(user);
+        Assertions.assertEquals(1, userDAO.getUsers().size());
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void posCreateUser(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
         UserDAO userDAO = getUserDAO(dbClass);
         userDAO.clear();
 
         UserData user = new UserData("user1", "pass", "email");
 
-        // Positive: create user
         userDAO.createUser(user);
-
-        // Negative: duplicate user
-        Assertions.assertThrows(DataAccessException.class, () -> userDAO.createUser(user));
-
-        // Positive: get user
-        UserData fetched = userDAO.getUser("user1");
-        Assertions.assertEquals("user1", fetched.username());
-
-        // Negative: get nonexistent user
-        Assertions.assertNull(userDAO.getUser("ghost"));
-
-        // Positive: get users
-        Assertions.assertEquals(1, userDAO.getUsers().size());
     }
 
     @ParameterizedTest
     @ValueSource(classes = {MySqlDAOsProvider.class})
-    void testAuthDAO(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+    void negDuplicateToken(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
         AuthDAO authDAO = getAuthDAO(dbClass);
         authDAO.clear();
-
         AuthData auth = new AuthData("token1", "user1");
-
-        // Positive: create auth
         authDAO.createAuth(auth);
-
-        // Negative: duplicate token
         Assertions.assertThrows(DataAccessException.class, () -> authDAO.createAuth(auth));
-
-        // Positive: get auth
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void posGetAuth(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        AuthDAO authDAO = getAuthDAO(dbClass);
+        authDAO.clear();
+        AuthData auth = new AuthData("token1", "user1");
+        authDAO.createAuth(auth);
         AuthData fetched = authDAO.getAuth("token1");
         Assertions.assertEquals("user1", fetched.username());
-
-        // Negative: bad token
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void negBadToken(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        AuthDAO authDAO = getAuthDAO(dbClass);
+        authDAO.clear();
+        AuthData auth = new AuthData("token1", "user1");
+        authDAO.createAuth(auth);
         Assertions.assertNull(authDAO.getAuth("bad_token"));
-
-        // Positive: delete auth
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void posDeleteAuth(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        AuthDAO authDAO = getAuthDAO(dbClass);
+        authDAO.clear();
+        AuthData auth = new AuthData("token1", "user1");
+        authDAO.createAuth(auth);
         authDAO.deleteAuth(auth);
-
-        // Negative: delete nonexistent
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void negDeleteAuth(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        AuthDAO authDAO = getAuthDAO(dbClass);
+        authDAO.clear();
+        AuthData auth = new AuthData("token1", "user1");
+        authDAO.createAuth(auth);
         Assertions.assertDoesNotThrow(() -> authDAO.deleteAuth(auth));
     }
-
     @ParameterizedTest
-    @ValueSource(classes = { MySqlDAOsProvider.class})
-    void testGameDAO(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void testCreateAuth(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        AuthDAO authDAO = getAuthDAO(dbClass);
+        authDAO.clear();
+        AuthData auth = new AuthData("token1", "user1");
+        authDAO.createAuth(auth);
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void NegCreateGame(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
         GameDAO gameDAO = getGameDAO(dbClass);
         gameDAO.clear();
-
-        // Positive: create game
         int id = gameDAO.createGame("game1").gameID();
-
-        // Negative: create null game
         Assertions.assertThrows(DataAccessException.class, () -> gameDAO.createGame(null));
-
-        // Positive: get game
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void posGetGame(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        GameDAO gameDAO = getGameDAO(dbClass);
+        gameDAO.clear();
+        int id = gameDAO.createGame("game1").gameID();
         GameData game = gameDAO.getGame(id);
         Assertions.assertEquals("game1", game.gameName());
-
-        // Negative: bad ID
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void negGetGame(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        GameDAO gameDAO = getGameDAO(dbClass);
+        gameDAO.clear();
+        int id = gameDAO.createGame("game1").gameID();
         Assertions.assertNull(gameDAO.getGame(-1));
-
-        // Positive: joinGame
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void posJoinGame(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        GameDAO gameDAO = getGameDAO(dbClass);
+        gameDAO.clear();
+        int id = gameDAO.createGame("game1").gameID();
+        GameData game = gameDAO.getGame(id);
         gameDAO.joinGame("WHITE", game, "user1");
-
-
-        // Negative: slot already taken
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void negJoinGame(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        GameDAO gameDAO = getGameDAO(dbClass);
+        gameDAO.clear();
+        int id = gameDAO.createGame("game1").gameID();
+        GameData game = gameDAO.getGame(id);
         Assertions.assertThrows(DataAccessException.class, () -> gameDAO.joinGame("WHITE", null, "user3"));
 
-        // Positive: updateGame
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void posUpdateGame(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        GameDAO gameDAO = getGameDAO(dbClass);
+        gameDAO.clear();
+        int id = gameDAO.createGame("game1").gameID();
         ChessGame updatedGame = new ChessGame();
         try {
             updatedGame.makeMove(new ChessMove(new ChessPosition(2, 1), new ChessPosition(3, 1), null));
@@ -133,13 +206,37 @@ class DataAccessTest {
             throw new RuntimeException(e);
         }
         gameDAO.updateGame(id, updatedGame);
-
-        // Negative: update with bad ID
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void negUpdateGame(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        GameDAO gameDAO = getGameDAO(dbClass);
+        gameDAO.clear();
+        int id = gameDAO.createGame("game1").gameID();
+        ChessGame updatedGame = new ChessGame();
+        try {
+            updatedGame.makeMove(new ChessMove(new ChessPosition(2, 1), new ChessPosition(3, 1), null));
+        } catch (InvalidMoveException e) {
+            throw new RuntimeException(e);
+        }
         Assertions.assertThrows(DataAccessException.class, () -> gameDAO.updateGame(-1, updatedGame));
-
-        // Positive: list games
+    }
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlDAOsProvider.class})
+    void posListGame(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        GameDAO gameDAO = getGameDAO(dbClass);
+        gameDAO.clear();
+        int id = gameDAO.createGame("game1").gameID();
         List<GameData> games = gameDAO.listGames();
         Assertions.assertEquals(1, games.size());
+    }
+    @ParameterizedTest
+    @ValueSource(classes = { MySqlDAOsProvider.class})
+    void testCreateGame(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+        GameDAO gameDAO = getGameDAO(dbClass);
+        gameDAO.clear();
+        int id = gameDAO.createGame("game1").gameID();
+
     }
 }
 
