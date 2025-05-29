@@ -36,7 +36,7 @@ public class MySqlGameDAO implements GameDAO{
                 return returnList;
             }
         } catch (Exception e) {
-            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to list games: %s", e.getMessage()));
         }
     }
 
@@ -48,7 +48,7 @@ public class MySqlGameDAO implements GameDAO{
             executeUpdate(statement, data.whiteUsername(), data.blackUsername(),data.gameName(), json);
 
         } catch (Exception e) {
-            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to add game: %s", e.getMessage()));
         }
     }
 
@@ -65,7 +65,7 @@ public class MySqlGameDAO implements GameDAO{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to find game: %s", e.getMessage()));
         }
         return null;
     }
@@ -73,7 +73,6 @@ public class MySqlGameDAO implements GameDAO{
     @Override
     public void joinGame(String color, GameData game, String username) throws DataAccessException {
             try (var conn = DatabaseManager.getConnection()) {
-                // First, check if the color is already taken
                 String query = "SELECT whiteUsername, blackUsername FROM games WHERE gameID = ?";
                 try (var ps = conn.prepareStatement(query)) {
                     ps.setInt(1, game.gameID());
@@ -93,16 +92,15 @@ public class MySqlGameDAO implements GameDAO{
                     }
                 }
 
-                // If the color is not taken, proceed with the update
                 String statement = "BLACK".equalsIgnoreCase(color)
                         ? "UPDATE games SET blackUsername=? WHERE gameID=?"
                         : "UPDATE games SET whiteUsername=? WHERE gameID=?";
                 executeUpdate(statement, username, game.gameID());
 
             } catch (DataAccessException e) {
-                throw e; // rethrow known DataAccessExceptions
+                throw e;
             } catch (Exception e) {
-                throw new DataAccessException(500, String.format("Error: Unable to joinGame: %s", e.getMessage()));
+                throw new DataAccessException(500, String.format("Error: Unable to join game: %s", e.getMessage()));
             }
         }
 
@@ -119,12 +117,12 @@ public class MySqlGameDAO implements GameDAO{
 
                 int affected = ps.executeUpdate();
                 if (affected == 0) {
-                    throw new DataAccessException(404, "Error: Unable to read data: %s");
+                    throw new DataAccessException(404, "Error: Unable to find game: %s");
                 }
             }
 
         } catch (Exception e) {
-            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to update game: %s", e.getMessage()));
         }
     }
 
@@ -143,7 +141,7 @@ public class MySqlGameDAO implements GameDAO{
             return new GameData(gameID, null, null, gameName,chessGame);
 
         } catch (Exception e) {
-            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to create game: %s", e.getMessage()));
         }
     }
 
@@ -156,7 +154,7 @@ public class MySqlGameDAO implements GameDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", ex.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to create database: %s", ex.getMessage()));
         }
     }
 
@@ -180,7 +178,7 @@ public class MySqlGameDAO implements GameDAO{
                 return 0;
             }
         } catch (SQLException e) {
-            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", statement, e.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to update database: %s", statement, e.getMessage()));
         }
     }
     private GameData readGame(ResultSet rs) throws SQLException {

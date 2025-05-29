@@ -35,7 +35,7 @@ public class MySqlUserDAO implements UserDAO{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to find user: %s", e.getMessage()));
         }
         return null;
     }
@@ -47,7 +47,7 @@ public class MySqlUserDAO implements UserDAO{
             executeUpdate(statement,user.username(), user.hashedPasword(), user.email());
 
         } catch (Exception e) {
-            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to create user: %s", e.getMessage()));
         }
     }
     @Override
@@ -64,7 +64,7 @@ public class MySqlUserDAO implements UserDAO{
                 return returnList;
             }
         } catch (Exception e) {
-            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to get user: %s", e.getMessage()));
         }
     }
     private void configureDatabase() throws DataAccessException {
@@ -76,7 +76,7 @@ public class MySqlUserDAO implements UserDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", ex.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to make database: %s", ex.getMessage()));
         }
     }
 
@@ -100,7 +100,7 @@ public class MySqlUserDAO implements UserDAO{
                 return 0;
             }
         } catch (SQLException e) {
-            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", statement, e.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to update database: %s", statement, e.getMessage()));
         }
     }
     private UserData readUser(ResultSet rs) throws SQLException {
