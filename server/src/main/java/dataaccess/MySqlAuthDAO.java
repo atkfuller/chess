@@ -128,7 +128,8 @@ public class MySqlAuthDAO implements AuthDAO{
             """
             CREATE TABLE IF NOT EXISTS  authentication (
               authToken varchar(256) NOT NULL,
-              username varchar(256) NOT NULL
+              username varchar(256) NOT NULL,
+              PRIMARY KEY(authToken)
             ) 
             """
     };
