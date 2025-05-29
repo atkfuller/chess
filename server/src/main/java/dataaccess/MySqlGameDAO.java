@@ -72,14 +72,40 @@ public class MySqlGameDAO implements GameDAO{
 
     @Override
     public void joinGame(String color, GameData game, String username) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            var statement = "BLACK".equals(color) ? "UPDATE games SET blackUsername=? WHERE gameID=?" :"UPDATE games SET whiteUsername=? WHERE gameID=?" ;
-            executeUpdate(statement, username, game.gameID());
+            try (var conn = DatabaseManager.getConnection()) {
+                // First, check if the color is already taken
+                String query = "SELECT whiteUsername, blackUsername FROM games WHERE gameID = ?";
+                try (var ps = conn.prepareStatement(query)) {
+                    ps.setInt(1, game.gameID());
+                    try (var rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            String white = rs.getString("whiteUsername");
+                            String black = rs.getString("blackUsername");
 
-        }catch (Exception e) {
-                throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
+                            if ("WHITE".equalsIgnoreCase(color) && white != null) {
+                                throw new DataAccessException(403, "Error: White player already assigned.");
+                            } else if ("BLACK".equalsIgnoreCase(color) && black != null) {
+                                throw new DataAccessException(403, "Error: Black player already assigned.");
+                            }
+                        } else {
+                            throw new DataAccessException(404, "Error : Game not found.");
+                        }
+                    }
+                }
+
+                // If the color is not taken, proceed with the update
+                String statement = "BLACK".equalsIgnoreCase(color)
+                        ? "UPDATE games SET blackUsername=? WHERE gameID=?"
+                        : "UPDATE games SET whiteUsername=? WHERE gameID=?";
+                executeUpdate(statement, username, game.gameID());
+
+            } catch (DataAccessException e) {
+                throw e; // rethrow known DataAccessExceptions
+            } catch (Exception e) {
+                throw new DataAccessException(500, String.format("Unable to join game: %s", e.getMessage()));
             }
-    }
+        }
+
 
     @Override
     public void updateGame(int gameID, ChessGame updatedGame) throws DataAccessException {
