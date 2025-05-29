@@ -27,7 +27,7 @@ public class MySqlAuthDAO implements AuthDAO{
             var statement = "INSERT INTO authentication (authToken, username) VALUES (?, ?)";
             executeUpdate(statement, autho.authToken(), autho.username());
         } catch (Exception e) {
-            throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", e.getMessage()));
         }
     }
 
@@ -44,7 +44,7 @@ public class MySqlAuthDAO implements AuthDAO{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", e.getMessage()));
         }
         return null;
     }
@@ -62,7 +62,7 @@ public class MySqlAuthDAO implements AuthDAO{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", e.getMessage()));
         }
         return null;
     }
@@ -73,7 +73,7 @@ public class MySqlAuthDAO implements AuthDAO{
             var statement = "DELETE FROM authentication WHERE authToken=?";
             executeUpdate(statement, aData.authToken());
         } catch (Exception e) {
-            throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", e.getMessage()));
         }
     }
 
@@ -91,7 +91,7 @@ public class MySqlAuthDAO implements AuthDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(500, String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", ex.getMessage()));
         }
     }
 
@@ -115,7 +115,7 @@ public class MySqlAuthDAO implements AuthDAO{
                 return 0;
             }
         } catch (SQLException e) {
-            throw new DataAccessException(500, String.format("unable to update database: %s, %s", statement, e.getMessage()));
+            throw new DataAccessException(500, String.format("Error: Unable to read data: %s", statement, e.getMessage()));
         }
     }
     private AuthData readAuth(ResultSet rs) throws SQLException {

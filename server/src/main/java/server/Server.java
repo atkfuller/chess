@@ -49,6 +49,7 @@ public class Server {
 
 
         Spark.exception(DataAccessException.class, this::exceptionHandler);
+        Spark.exception(Exception.class, this::genericExceptionHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint
         Spark.init();
 
@@ -63,6 +64,11 @@ public class Server {
     private void exceptionHandler(DataAccessException ex, Request req, Response res) {
         res.status(ex.getStatusCode());
         res.body(ex.toJson());
+    }
+    private void genericExceptionHandler(Exception ex, Request req, Response res) {
+        res.status(500);
+        res.type("application/json");
+        res.body("{\"message\":\"Internal server error\"}");
     }
 
 
