@@ -43,15 +43,10 @@ public class MySqlGameDAO implements GameDAO{
     @Override
     public void addGame(GameData data) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES ('?','?', '?','?')";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(1, data.whiteUsername());
-                ps.setString(2,data.blackUsername());
-                ps.setString(3,data.gameName());
-                var json = new Gson().toJson(data.game());
-                ps.setString(4,json);
-                ps.executeUpdate(statement);
-            }
+            var statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
+            var json = new Gson().toJson(data.game());
+            executeUpdate(statement, data.whiteUsername(), data.blackUsername(),data.gameName(), json);
+
         } catch (Exception e) {
             throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
         }
@@ -78,12 +73,9 @@ public class MySqlGameDAO implements GameDAO{
     @Override
     public void joinGame(String color, GameData game, String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "BLACK".equals(color) ? "UPDATE games SET blackUsername='?' WHERE gameID=?" :"UPDATE games SET whiteUsername='?' WHERE gameID=?" ;
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(1,username);
-                ps.setInt(2,game.gameID());
-                ps.executeUpdate(statement);
-            }
+            var statement = "BLACK".equals(color) ? "UPDATE games SET blackUsername=? WHERE gameID=?" :"UPDATE games SET whiteUsername=? WHERE gameID=?" ;
+            executeUpdate(statement, username, game.gameID());
+
         }catch (Exception e) {
                 throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
             }
@@ -92,13 +84,10 @@ public class MySqlGameDAO implements GameDAO{
     @Override
     public void updateGame(int gameID, ChessGame updatedGame) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement =  "UPDATE games SET game='?' WHERE gameID=?";
-            try (var ps = conn.prepareStatement(statement)) {
-                var json = new Gson().toJson(updatedGame);
-                ps.setString(1,json);
-                ps.setInt(2,gameID);
-                ps.executeUpdate(statement);
-            }
+            var statement =  "UPDATE games SET game=? WHERE gameID=?";
+            var json = new Gson().toJson(updatedGame);
+            executeUpdate(statement, json, gameID);
+
         }catch (Exception e) {
             throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
         }
@@ -112,15 +101,12 @@ public class MySqlGameDAO implements GameDAO{
     @Override
     public GameData createGame(String gameName) throws DataAccessException{
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "INSERT INTO games ( gameName, game) VALUES ('?','?')";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(3,gameName);
-                var chessGame=new ChessGame();
-                var json = new Gson().toJson(chessGame);
-                ps.setString(2,json);
-                var gameID=ps.executeUpdate(statement);
-                return new GameData(gameID, null, null, gameName,chessGame);
-            }
+            var statement = "INSERT INTO games ( gameName, game) VALUES (?,?)";
+            var chessGame=new ChessGame();
+            var json = new Gson().toJson(chessGame);
+            var gameID=executeUpdate(statement, gameName, json);
+            return new GameData(gameID, null, null, gameName,chessGame);
+
         } catch (Exception e) {
             throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
         }
@@ -145,7 +131,7 @@ public class MySqlGameDAO implements GameDAO{
                 for (var i = 0; i < params.length; i++) {
                     var param = params[i];
                     if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof String p) ps.setString(i + 1, p);
+                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
                     else if (param instanceof String p) ps.setString(i + 1, p);
                     else if (param == null) ps.setNull(i + 1, NULL);
                 }
@@ -175,13 +161,13 @@ public class MySqlGameDAO implements GameDAO{
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  games (
-              gameIDint identity(1,1) not null,
+              gameID int NOT NULL AUTO_INCREMENT,
               whiteUsername varchar(256),
               blackUsername varchar(256),
               gameName varchar(256) not null,
-              game, varchar(256) not null,
-              PRIMARY KEY (gameID)
-            ) 
+              game TEXT not null,
+              PRIMARY KEY(gameID)
+            )
             """
     };
 

@@ -24,12 +24,8 @@ public class MySqlAuthDAO implements AuthDAO{
     @Override
     public void createAuth(AuthData autho) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "INSERT INTO authentication (authToken, username) VALUES ('?','?')";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(1,autho.authToken());
-                ps.setString(2,autho.username());
-                ps.executeUpdate(statement);
-            }
+            var statement = "INSERT INTO authentication (authToken, username) VALUES (?, ?)";
+            executeUpdate(statement, autho.authToken(), autho.username());
         } catch (Exception e) {
             throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
         }
@@ -38,7 +34,7 @@ public class MySqlAuthDAO implements AuthDAO{
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException{
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT authToken, username FROM authentication WHERE authToken='?'";
+            var statement = "SELECT authToken, username FROM authentication WHERE authToken=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, authToken);
                 try (var rs = ps.executeQuery()) {
@@ -56,7 +52,7 @@ public class MySqlAuthDAO implements AuthDAO{
     @Override
     public AuthData getAuthByUsername(String username) throws DataAccessException{
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT authToken, username FROM authentication WHERE username='?'";
+            var statement = "SELECT authToken, username FROM authentication WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(2, username);
                 try (var rs = ps.executeQuery()) {
@@ -74,11 +70,8 @@ public class MySqlAuthDAO implements AuthDAO{
     @Override
     public void deleteAuth(AuthData aData) throws DataAccessException{
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "DELETE FROM authentication WHERE authToken='?'";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(1, aData.authToken());
-                ps.executeUpdate(statement);
-            }
+            var statement = "DELETE FROM authentication WHERE authToken=?";
+            executeUpdate(statement, aData.authToken());
         } catch (Exception e) {
             throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
         }
@@ -135,8 +128,7 @@ public class MySqlAuthDAO implements AuthDAO{
             """
             CREATE TABLE IF NOT EXISTS  authentication (
               authToken varchar(256) NOT NULL,
-              username varchar(256) NOT NULL,
-              PRIMARY KEY (username)
+              username varchar(256) NOT NULL
             ) 
             """
     };

@@ -21,7 +21,14 @@ public class Server {
     }
     public Server() {
         try {
-            new Server(new MySqlDAOsProvider());
+            IDAOsProvider provider= new MySqlDAOsProvider();
+            UserDAO userDAO = provider.getUserDAO();
+            AuthDAO authDAO = provider.getAuthDAO();
+            GameDAO gameDAO = provider.getGameDAO();
+
+            this.userService = new UserServices(userDAO, authDAO, gameDAO);
+            this.gameService = new GameServices(authDAO, gameDAO);
+            this.clearService = new ClearService(userDAO, authDAO, gameDAO);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }

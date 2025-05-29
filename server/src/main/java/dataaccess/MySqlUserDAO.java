@@ -25,7 +25,7 @@ public class MySqlUserDAO implements UserDAO{
     @Override
     public UserData getUser(String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, FROM users WHERE username='?'";
+            var statement = "SELECT username, password, email FROM users WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
@@ -43,13 +43,9 @@ public class MySqlUserDAO implements UserDAO{
     @Override
     public void createUser(UserData user) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "INSERT INTO users (username, password, email) VALUES ('?','?','?')";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(1,user.username());
-                ps.setString(2,user.hashedPasword());
-                ps.setString(3,user.email());
-                ps.executeUpdate(statement);
-            }
+            var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+            executeUpdate(statement,user.username(), user.hashedPasword(), user.email());
+
         } catch (Exception e) {
             throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
         }
