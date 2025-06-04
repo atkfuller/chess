@@ -1,9 +1,10 @@
 import chess.*;
+import dataaccess.DataAccessException;
 import server.Server;
 import ui.PreLoginUI;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws DataAccessException {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("♕ 240 Chess Client: " + piece);
         var server= new Server();
@@ -12,7 +13,8 @@ public class Main {
         if (args.length == 1) {
             serverUrl = args[0];
         }
-
-        new PreLoginUI(serverUrl).run();
+        PreLoginUI ui= new PreLoginUI(serverUrl);
+        ui.clear();
+        ui.run();
     }
 }

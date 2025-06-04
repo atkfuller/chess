@@ -32,7 +32,7 @@ public class ServerFacade {
     }
     public LogoutResult logout(LogoutRequest request) throws DataAccessException {
         var path="/session";
-        return this.makeRequest("DELETE", path, request, LogoutResult.class);
+        return this.makeRequestAuth("DELETE", path, request.authToken(),null, LogoutResult.class);
     }
     public ListGameResult listGames(ListGameRequest request) throws DataAccessException {
         var path="/game";
