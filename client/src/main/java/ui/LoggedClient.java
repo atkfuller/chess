@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static ui.EscapeSequences.SET_TEXT_COLOR_YELLOW;
+
 public class LoggedClient {
     private String visitorName = null;
     private final ServerFacade server;
@@ -16,7 +18,8 @@ public class LoggedClient {
     private String authToken=null;
     private Map<Integer, GameData> allGames= new HashMap<>();
 
-    public LoggedClient(String serverUrl, String authToken) {
+    public LoggedClient(String serverUrl, String authToken, String name) {
+        visitorName= name;
         server = new ServerFacade(serverUrl);
         state=State.SIGNEDIN;
         this.serverUrl = serverUrl;
@@ -93,7 +96,8 @@ public class LoggedClient {
 
     public String help() {
         if (state == State.SIGNEDOUT) {
-            return """
+            return SET_TEXT_COLOR_YELLOW+"""
+                    - help
                     - logout
                     - create game(create) <game name>
                     - list games(list)
@@ -101,7 +105,8 @@ public class LoggedClient {
                     - observe game(observe) <number> <color>
                     """;
         }
-        return """
+        return SET_TEXT_COLOR_YELLOW+"""
+                - help
                 - logout
                 - create game(create) <game name>
                 - list games(list)

@@ -3,19 +3,19 @@ package ui;
 import java.util.Scanner;
 
 import static java.awt.Color.BLUE;
-import static ui.EscapeSequences.SET_TEXT_COLOR_GREEN;
+import static ui.EscapeSequences.*;
 
 public class PostLoginUI {
     private final LoggedClient client;
     private final String authToken;
 
-    public PostLoginUI(String serverUrl, String authToken) {
+    public PostLoginUI(String serverUrl, String authToken, String name) {
         this.authToken= authToken;
-        client = new LoggedClient(serverUrl, authToken);
+        client = new LoggedClient(serverUrl, authToken, name);
     }
 
     public void run() {
-        System.out.println("\uD83D\uDC36 THE CHESS GAME");
+        System.out.println(SET_BG_COLOR_DARK_GREEN+ "THE CHESS GAME");
         System.out.print(client.help());
 
         Scanner scanner = new Scanner(System.in);
@@ -26,7 +26,10 @@ public class PostLoginUI {
 
             try {
                 result = client.eval(line);
-                System.out.print(BLUE + result);
+                System.out.print(SET_TEXT_COLOR_BLUE + result);
+                if (result.contains("logged out")) {
+                    break;
+                }
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -41,7 +44,7 @@ public class PostLoginUI {
 //    }
 
     private void printPrompt() {
-        System.out.print("\n" + "CHESS GAME" + ">>> " + SET_TEXT_COLOR_GREEN);
+        System.out.print("\n" + SET_TEXT_COLOR_WHITE+"CHESS GAME" + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 
 }

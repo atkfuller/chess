@@ -1,11 +1,12 @@
 package ui;
 
+import dataaccess.DataAccessException;
+
 import java.util.Scanner;
 
 import static java.awt.Color.BLUE;
 import static java.awt.Color.GREEN;
-import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
-import static ui.EscapeSequences.SET_TEXT_COLOR_GREEN;
+import static ui.EscapeSequences.*;
 
 
 public class PreLoginUI {
@@ -16,7 +17,7 @@ public class PreLoginUI {
     }
 
     public void run() {
-        System.out.println("\uD83D\uDC36 Welcome to THE CHESS GAME. login to play");
+        System.out.println(SET_TEXT_COLOR_WHITE+SET_TEXT_BOLD+BLACK_PAWN+" Welcome to THE CHESS GAME "+BLACK_PAWN+" login to play"+RESET_TEXT_COLOR);
         System.out.print(client.help());
 
         Scanner scanner = new Scanner(System.in);
@@ -43,6 +44,9 @@ public class PreLoginUI {
 
     private void printPrompt() {
         System.out.print("\n" + "CHESS GAME" + ">>> " + SET_TEXT_COLOR_GREEN);
+    }
+    public void clear() throws DataAccessException {
+        client.clear();
     }
 
 }

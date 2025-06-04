@@ -6,6 +6,7 @@ import dataaccess.DataAccessException;
 import java.util.Arrays;
 
 import static java.sql.Types.NULL;
+import static ui.EscapeSequences.SET_TEXT_COLOR_YELLOW;
 
 
 public class LoginClient {
@@ -43,8 +44,9 @@ public class LoginClient {
             state = State.SIGNEDIN;
             visitorName = String.join("-", params);
             System.out.println(String.format("You signed in as %s", visitorName));
-            PostLoginUI newUI= new PostLoginUI(serverUrl, result.authToken());
+            PostLoginUI newUI= new PostLoginUI(serverUrl, result.authToken(), visitorName);
             newUI.run();
+            new PreLoginUI(serverUrl).run();
             return String.format("You signed in as %s", visitorName);
         }
         throw new DataAccessException(400, "Expected: <username> <password> <email>");
@@ -55,8 +57,9 @@ public class LoginClient {
             state = State.SIGNEDIN;
             visitorName = String.join("-", params);
             System.out.println(String.format("You logged in as %s", visitorName));
-            PostLoginUI newUI= new PostLoginUI(serverUrl, result.authToken());
+            PostLoginUI newUI= new PostLoginUI(serverUrl, result.authToken(), visitorName);
             newUI.run();
+            new PreLoginUI(serverUrl).run();
             return String.format("You logged in as %s", visitorName);
         }
         throw new DataAccessException(400, "Expected: <username> <password>");
@@ -64,13 +67,13 @@ public class LoginClient {
 
     public String help() {
         if (state == State.SIGNEDOUT) {
-            return """
+            return SET_TEXT_COLOR_YELLOW+""" 
                     - login <username> <password>
                     - register <username> <password> <email>
                     - quit
                     """;
         }
-        return """
+        return SET_TEXT_COLOR_YELLOW+"""
                 - login <username> <password>
                 - register <username> <password> <email>
                 - quit
@@ -81,6 +84,9 @@ public class LoginClient {
         if (state == State.SIGNEDOUT) {
             throw new DataAccessException(400, "You must sign in");
         }
+    }
+    public void clear() throws DataAccessException {
+        server.clear();
     }
 
 
