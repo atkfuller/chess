@@ -1,6 +1,4 @@
 import chess.*;
-import dataaccess.DataAccessException;
-import server.Server;
 import ui.BoardPrinter;
 import ui.PreLoginUI;
 
