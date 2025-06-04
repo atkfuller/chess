@@ -6,6 +6,7 @@ import dataaccess.DataAccessException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class LoggedClient {
     private String visitorName = null;
@@ -32,7 +33,7 @@ public class LoggedClient {
                 case "create" -> createGame(params);
                 case "list" -> listGames();
                 case "play" -> playGame(params);
-//                case "observe game" -> observeGame(params);
+               case "observe" -> observeGame(params);
                 default -> help();
             };
         } catch (DataAccessException ex) {
@@ -70,16 +71,25 @@ public class LoggedClient {
     public String playGame(String... params) throws DataAccessException{
         assertSignedIn();
         if(params.length==2) {
-            Integer gameID= allGames.get(Integer.valueOf(params[0])).gameID();
+            GameData game=allGames.get(Integer.valueOf(params[0]));
+            Integer gameID= game.gameID();
             String color= params[1].toUpperCase();
             server.joinGame(new JoinGameRequest(authToken, color, gameID));
+            displayGame(game, color);
             return String.format("joined game", allGames.get(Integer.valueOf(params[0])).gameName());
         }
         throw new DataAccessException(400, "Expected: <number> <color>");
    }
-//    public String observeGame(String... params) throws DataAccessException{
-//
-//    }
+    public String observeGame(String... params) throws DataAccessException{
+        if(params.length==2) {
+            GameData game=allGames.get(Integer.valueOf(params[0]));
+            Integer gameID= game.gameID();
+            String color= params[1].toUpperCase();
+            displayGame(game, color);
+            return String.format("observe game", allGames.get(Integer.valueOf(params[0])).gameName());
+        }
+        throw new DataAccessException(400, "Expected: <number> <color>");
+    }
 
     public String help() {
         if (state == State.SIGNEDOUT) {
@@ -87,6 +97,8 @@ public class LoggedClient {
                     - logout
                     - create game(create) <game name>
                     - list games(list)
+                    - play game(play) <number> <color>
+                    - observe game(observe) <number> <color>
                     """;
         }
         return """
@@ -94,8 +106,7 @@ public class LoggedClient {
                 - create game(create) <game name>
                 - list games(list)
                 - play game(play) <number> <color>
-                - signOut
-                - quit
+                - observe game(observe) <number> <color>
                 """;
     }
 
@@ -106,6 +117,14 @@ public class LoggedClient {
     }
     private void addToGames(Integer i, GameData game){
         allGames.put(i, game);
+    }
+    private void displayGame(GameData game, String color){
+        if(Objects.equals(color, "WHITE")){
+            BoardPrinter.printBoardWhiteView(game.game().getBoard());
+        }
+        else{
+            BoardPrinter.printBoardBlackView(game.game().getBoard());
+        }
     }
 }
 
