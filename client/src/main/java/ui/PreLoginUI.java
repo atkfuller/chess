@@ -2,6 +2,8 @@ package ui;
 
 import java.util.Scanner;
 
+import static java.awt.Color.BLUE;
+
 public class PreLoginUI {
     private final LoginClient client;
 
