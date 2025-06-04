@@ -1,7 +1,6 @@
 package ui;
 import model.LoginRequest;
 import model.RegisterRequest;
-import dataaccess.DataAccessException;
 import java.util.Arrays;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_YELLOW;
@@ -32,11 +31,11 @@ public class LoginClient {
                 case "quit" -> "quit";
                 default -> help();
             };
-        } catch (DataAccessException ex) {
+        } catch (Exception ex) {
             return ex.getMessage();
         }
     }
-    public String register(String... params) throws DataAccessException {
+    public String register(String... params) throws Exception {
         if (params.length == 3) {
             var result=server.register(new RegisterRequest(params[0],params[1],params[2]));
             state = State.SIGNEDIN;
@@ -47,9 +46,9 @@ public class LoginClient {
             new PreLoginUI(serverUrl).run();
             return String.format("You signed in as %s", visitorName);
         }
-        throw new DataAccessException(400, "Expected: <username> <password> <email>");
+        throw new ClientException(400, "Expected: <username> <password> <email>");
     }
-    public String login(String... params) throws DataAccessException {
+    public String login(String... params) throws Exception {
         if(params.length==2) {
             var result=server.login(new LoginRequest(params[0], params[1]));
             state = State.SIGNEDIN;
@@ -60,7 +59,7 @@ public class LoginClient {
             new PreLoginUI(serverUrl).run();
             return String.format("You logged in as %s", visitorName);
         }
-        throw new DataAccessException(400, "Expected: <username> <password>");
+        throw new ClientException(400, "Expected: <username> <password>");
     }
 
     public String help() {
@@ -78,12 +77,12 @@ public class LoginClient {
                 """;
     }
 
-    private void assertSignedIn() throws DataAccessException {
+    private void assertSignedIn() throws ClientException {
         if (state == State.SIGNEDOUT) {
-            throw new DataAccessException(400, "You must sign in");
+            throw new ClientException(400, "You must sign in");
         }
     }
-    public void clear() throws DataAccessException {
+    public void clear() throws Exception {
         server.clear();
     }
 

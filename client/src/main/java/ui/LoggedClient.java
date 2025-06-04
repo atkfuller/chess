@@ -1,7 +1,6 @@
 package ui;
 import com.google.gson.Gson;
 import model.*;
-import dataaccess.DataAccessException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,25 +37,25 @@ public class LoggedClient {
                case "observe" -> observeGame(params);
                 default -> help();
             };
-        } catch (DataAccessException ex) {
+        } catch (Exception ex) {
             return ex.getMessage();
         }
     }
-    public String logout(String... params) throws DataAccessException{
+    public String logout(String... params) throws Exception {
         assertSignedIn();
         server.logout(new LogoutRequest(authToken));
         state = State.SIGNEDOUT;
         return String.format("%s logged out", visitorName);
     }
-    public String createGame(String... params) throws DataAccessException {
+    public String createGame(String... params) throws Exception {
         assertSignedIn();
         if(params.length==1) {
             server.createGame(new CreateGameRequest(authToken, params[0]));
             return String.format("created game", params[0]);
         }
-        throw new DataAccessException(400, "Expected: <gamename>");
+        throw new ClientException(400, "Expected: <gamename>");
     }
-    public String listGames(String... params) throws DataAccessException {
+    public String listGames(String... params) throws Exception {
         assertSignedIn();
         var games = server.listGames(new ListGameRequest(authToken)).games();
         var result = new StringBuilder();
@@ -70,7 +69,7 @@ public class LoggedClient {
         }
         return result.toString();
     }
-    public String playGame(String... params) throws DataAccessException{
+    public String playGame(String... params) throws Exception{
         assertSignedIn();
         if(params.length==2) {
             GameData game=allGames.get(Integer.valueOf(params[0]));
@@ -80,9 +79,9 @@ public class LoggedClient {
             displayGame(game, color);
             return String.format("joined game", allGames.get(Integer.valueOf(params[0])).gameName());
         }
-        throw new DataAccessException(400, "Expected: <number> <color>");
+        throw new ClientException(400, "Expected: <number> <color>");
    }
-    public String observeGame(String... params) throws DataAccessException{
+    public String observeGame(String... params) throws Exception{
         if(params.length==2) {
             GameData game=allGames.get(Integer.valueOf(params[0]));
             Integer gameID= game.gameID();
@@ -90,7 +89,7 @@ public class LoggedClient {
             displayGame(game, color);
             return String.format("observe game", allGames.get(Integer.valueOf(params[0])).gameName());
         }
-        throw new DataAccessException(400, "Expected: <number> <color>");
+        throw new ClientException(400, "Expected: <number> <color>");
     }
 
     public String help() {
@@ -114,9 +113,9 @@ public class LoggedClient {
                 """;
     }
 
-    private void assertSignedIn() throws DataAccessException {
+    private void assertSignedIn() throws ClientException{
         if (state == State.SIGNEDOUT) {
-            throw new DataAccessException(400, "You must sign in");
+            throw new ClientException(400, "You must sign in");
         }
     }
     private void addToGames(Integer i, GameData game){

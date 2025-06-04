@@ -1,6 +1,5 @@
 package ui;
 
-import dataaccess.DataAccessException;
 
 import java.util.Scanner;
 
@@ -45,7 +44,7 @@ public class PreLoginUI {
     private void printPrompt() {
         System.out.print("\n" + "CHESS GAME" + ">>> " + SET_TEXT_COLOR_GREEN);
     }
-    public void clear() throws DataAccessException {
+    public void clear() throws Exception {
         client.clear();
     }
 

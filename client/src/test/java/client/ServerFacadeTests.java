@@ -4,6 +4,7 @@ import dataaccess.DataAccessException;
 import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
+import ui.ClientException;
 import ui.ServerFacade;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,7 +28,7 @@ public class ServerFacadeTests {
         server.stop();
     }
     @BeforeEach
-     void clear() throws DataAccessException {
+     void clear() throws Exception {
         facade.clear();
     }
 
@@ -118,7 +119,7 @@ public class ServerFacadeTests {
         var authData = facade.register(new RegisterRequest("player7", "password", "p7@email.com"));
         facade.createGame(new CreateGameRequest(authData.authToken(), "Temp Game"));
         facade.clear();
-        DataAccessException ex = assertThrows(DataAccessException.class, () -> {
+        ClientException ex = assertThrows(ClientException.class, () -> {
             facade.listGames(new ListGameRequest(authData.authToken()));
         });
 

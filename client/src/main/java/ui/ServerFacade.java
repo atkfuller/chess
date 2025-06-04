@@ -1,5 +1,5 @@
 package ui;
-import dataaccess.DataAccessException;
+
 
 import com.google.gson.Gson;
 import model.*;
@@ -18,38 +18,38 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public void clear() throws DataAccessException {
+    public void clear() throws Exception {
         var path="/db";
         this.makeRequest("DELETE", path, null, null);
     }
-    public RegisterResult register(RegisterRequest request) throws DataAccessException {
+    public RegisterResult register(RegisterRequest request) throws Exception{
         var path="/user";
         return this.makeRequest("POST", path, request, RegisterResult.class);
     }
-    public LoginResult login(LoginRequest request) throws DataAccessException {
+    public LoginResult login(LoginRequest request) throws Exception {
         var path="/session";
         return this.makeRequest("POST", path, request, LoginResult.class);
     }
-    public LogoutResult logout(LogoutRequest request) throws DataAccessException {
+    public LogoutResult logout(LogoutRequest request) throws Exception {
         var path="/session";
         return this.makeRequestAuth("DELETE", path, request.authToken(),null, LogoutResult.class);
     }
-    public ListGameResult listGames(ListGameRequest request) throws DataAccessException {
+    public ListGameResult listGames(ListGameRequest request) throws Exception {
         var path="/game";
         return  this.makeRequestAuth("GET", path, request.authToken(), null, ListGameResult.class);
     }
-    public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {
+    public CreateGameResult createGame(CreateGameRequest request) throws Exception {
         var path="/game";
         return this.makeRequestAuth("POST", path, request.authToken(),request, CreateGameResult.class);
     }
-    public void joinGame(JoinGameRequest request) throws DataAccessException {
+    public void joinGame(JoinGameRequest request) throws Exception {
         var path= "/game";
         this.makeRequestAuth("PUT", path, request.authToken(),request, null);
     }
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws DataAccessException {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
         return this.makeRequestAuth(method, path, null, request, responseClass);
     }
-    private <T> T makeRequestAuth(String method, String path, String authToken, Object request, Class<T> responseClass) throws DataAccessException {
+    private <T> T makeRequestAuth(String method, String path, String authToken, Object request, Class<T> responseClass) throws Exception {
         System.out.println("Connecting to: " + serverUrl + path);
         try {
             URL url = (new URI(serverUrl + path)).toURL();
@@ -64,7 +64,7 @@ public class ServerFacade {
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
-            throw new DataAccessException(500, ex.getMessage());
+            throw new ClientException(500, ex.getMessage());
         }
     }
 
@@ -79,16 +79,16 @@ public class ServerFacade {
         }
     }
 
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, DataAccessException{
+    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, Exception{
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
-                    throw DataAccessException.fromJson(respErr);
+                    throw ClientException.fromJson(respErr);
                 }
             }
 
-            throw new DataAccessException(status, "other failure: " + status);
+            throw new ClientException(status, "other failure: " + status);
         }
     }
 
