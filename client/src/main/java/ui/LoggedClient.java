@@ -47,7 +47,7 @@ public class LoggedClient {
         assertSignedIn();
         if(params.length==1) {
             server.createGame(new CreateGameRequest(authToken, params[0]));
-            return String.format("created game");
+            return String.format("created game", params[0]);
         }
         throw new DataAccessException(400, "Expected: <gamename>");
     }
@@ -57,7 +57,8 @@ public class LoggedClient {
         var result = new StringBuilder();
         var gson = new Gson();
         for (var game : games) {
-            result.append(gson.toJson(game)).append('\n');
+            String gameline=String.format("Game name: %s Players(white, black): %s, %s", game.gameName(), game.whiteUsername(), game.blackUsername());
+            result.append(gson.toJson(gameline)).append('\n');
         }
         return result.toString();
     }

@@ -40,7 +40,7 @@ public class ServerFacade {
     }
     public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {
         var path="/game";
-        return this.makeRequest("POST", path, request, CreateGameResult.class);
+        return this.makeRequestAuth("POST", path, request.authToken(),request, CreateGameResult.class);
     }
     public void joinGame(JoinGameRequest request) throws DataAccessException {
         var path= "/game";
