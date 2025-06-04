@@ -44,7 +44,7 @@ public class ServerFacade {
     }
     public void joinGame(JoinGameRequest request) throws DataAccessException {
         var path= "/game";
-        this.makeRequest("PUT", path, request, null);
+        this.makeRequestAuth("PUT", path, request.authToken(),request, null);
     }
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws DataAccessException {
         return this.makeRequestAuth(method, path, null, request, responseClass);

@@ -1,17 +1,19 @@
 package ui;
 import com.google.gson.Gson;
-import model.CreateGameRequest;
-import model.ListGameRequest;
-import model.LogoutRequest;
+import model.*;
 import server.ServerFacade;
 import dataaccess.DataAccessException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 public class LoggedClient {
     private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
     private State state = State.SIGNEDOUT;
     private String authToken=null;
+    private Map<Integer, GameData> allGames= new HashMap<>();
 
     public LoggedClient(String serverUrl, String authToken) {
         server = new ServerFacade(serverUrl);
@@ -29,7 +31,7 @@ public class LoggedClient {
                 case "logout" -> logout(params);
                 case "create" -> createGame(params);
                 case "list" -> listGames();
-//                case "play game" -> playGame();
+                case "play" -> playGame(params);
 //                case "observe game" -> observeGame(params);
                 default -> help();
             };
@@ -56,15 +58,25 @@ public class LoggedClient {
         var games = server.listGames(new ListGameRequest(authToken)).games();
         var result = new StringBuilder();
         var gson = new Gson();
+        Integer key=1;
         for (var game : games) {
-            String gameline=String.format("Game name: %s Players(white, black): %s, %s", game.gameName(), game.whiteUsername(), game.blackUsername());
+            addToGames(key, game);
+            String gameline=String.format("%d) Game name: %s Players(white, black): %s, %s", key,game.gameName(), game.whiteUsername(), game.blackUsername());
             result.append(gson.toJson(gameline)).append('\n');
+            key++;
         }
         return result.toString();
     }
-//    public String playGame(String... params) throws DataAccessException{
-//
-//    }
+    public String playGame(String... params) throws DataAccessException{
+        assertSignedIn();
+        if(params.length==2) {
+            Integer gameID= allGames.get(Integer.valueOf(params[0])).gameID();
+            String color= params[1].toUpperCase();
+            server.joinGame(new JoinGameRequest(authToken, color, gameID));
+            return String.format("joined game", allGames.get(Integer.valueOf(params[0])).gameName());
+        }
+        throw new DataAccessException(400, "Expected: <number> <color>");
+   }
 //    public String observeGame(String... params) throws DataAccessException{
 //
 //    }
@@ -81,7 +93,7 @@ public class LoggedClient {
                 - logout
                 - create game(create) <game name>
                 - list games(list)
-                - adoptAll
+                - play game(play) <number> <color>
                 - signOut
                 - quit
                 """;
@@ -91,6 +103,9 @@ public class LoggedClient {
         if (state == State.SIGNEDOUT) {
             throw new DataAccessException(400, "You must sign in");
         }
+    }
+    private void addToGames(Integer i, GameData game){
+        allGames.put(i, game);
     }
 }
 
