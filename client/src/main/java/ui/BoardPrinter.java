@@ -58,8 +58,9 @@ public class BoardPrinter {
     }
 
     private static String getPieceSymbol(ChessPiece piece) {
-        if (piece == null) return EMPTY;
-        return switch (piece.getPieceType()) {
+        if (piece == null) return "   "; // 3 spaces for empty square
+
+        String symbol = switch (piece.getPieceType()) {
             case KING -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_KING : BLACK_KING;
             case QUEEN -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_QUEEN : BLACK_QUEEN;
             case ROOK -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_ROOK : BLACK_ROOK;
@@ -67,5 +68,7 @@ public class BoardPrinter {
             case KNIGHT -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_KNIGHT : BLACK_KNIGHT;
             case PAWN -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_PAWN : BLACK_PAWN;
         };
+        return " " + symbol + " "; // pad with spaces to make 3-wide cell
+    }
     }
 }
