@@ -1,7 +1,6 @@
 package ui;
 import com.google.gson.Gson;
 import model.*;
-import server.ServerFacade;
 import dataaccess.DataAccessException;
 import java.util.Arrays;
 import java.util.HashMap;

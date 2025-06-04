@@ -1,11 +1,9 @@
 package ui;
 import model.LoginRequest;
 import model.RegisterRequest;
-import server.ServerFacade;
 import dataaccess.DataAccessException;
 import java.util.Arrays;
 
-import static java.sql.Types.NULL;
 import static ui.EscapeSequences.SET_TEXT_COLOR_YELLOW;
 
 

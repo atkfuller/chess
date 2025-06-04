@@ -4,7 +4,7 @@ import dataaccess.DataAccessException;
 import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
-import server.ServerFacade;
+import ui.ServerFacade;
 
 import static org.junit.jupiter.api.Assertions.*;
 
