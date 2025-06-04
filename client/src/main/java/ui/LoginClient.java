@@ -39,18 +39,24 @@ public class LoginClient {
     }
     public String register(String... params) throws DataAccessException {
         if (params.length == 3) {
-            server.register(new RegisterRequest(params[0],params[1],params[2]));
+            var result=server.register(new RegisterRequest(params[0],params[1],params[2]));
             state = State.SIGNEDIN;
             visitorName = String.join("-", params);
+            System.out.println(String.format("You signed in as %s", visitorName));
+            PostLoginUI newUI= new PostLoginUI(serverUrl, result.authToken());
+            newUI.run();
             return String.format("You signed in as %s", visitorName);
         }
         throw new DataAccessException(400, "Expected: <username> <password> <email>");
     }
     public String login(String... params) throws DataAccessException {
         if(params.length==2) {
-            server.login(new LoginRequest(params[0], params[1]));
+            var result=server.login(new LoginRequest(params[0], params[1]));
             state = State.SIGNEDIN;
             visitorName = String.join("-", params);
+            System.out.println(String.format("You logged in as %s", visitorName));
+            PostLoginUI newUI= new PostLoginUI(serverUrl, result.authToken());
+            newUI.run();
             return String.format("You logged in as %s", visitorName);
         }
         throw new DataAccessException(400, "Expected: <username> <password>");

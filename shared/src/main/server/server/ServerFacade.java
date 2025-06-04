@@ -36,7 +36,7 @@ public class ServerFacade {
     }
     public ListGameResult listGames(ListGameRequest request) throws DataAccessException {
         var path="/game";
-        return  this.makeRequest("GET", path, request, ListGameResult.class);
+        return  this.makeRequestAuth("GET", path, request.authToken(), null, ListGameResult.class);
     }
     public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {
         var path="/game";
