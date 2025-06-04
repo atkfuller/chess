@@ -1,21 +1,25 @@
 package ui;
+import model.LoginRequest;
+import model.RegisterRequest;
 import server.ServerFacade;
 import dataaccess.DataAccessException;
 import java.util.Arrays;
+
+import static java.sql.Types.NULL;
 
 
 public class LoginClient {
     private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
-    private final NotificationHandler notificationHandler;
-    private WebSocketFacade ws;
+   // private final NotificationHandler notificationHandler;
+    //private WebSocketFacade ws;
     private State state = State.SIGNEDOUT;
 
-    public LoginClient(String serverUrl, NotificationHandler notificationHandler) {
+    public LoginClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
-        this.notificationHandler = notificationHandler;
+        //this.notificationHandler = notificationHandler;
     }
 
     public String eval(String input) {
@@ -26,12 +30,6 @@ public class LoginClient {
             return switch (cmd) {
                 case "login" -> login(params);
                 case "register" -> register(params);
-                case "signin" -> signIn(params);
-                case "rescue" -> rescuePet(params);
-                case "list" -> listPets();
-                case "signout" -> signOut();
-                case "adopt" -> adoptPet(params);
-                case "adoptall" -> adoptAllPets();
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -40,26 +38,29 @@ public class LoginClient {
         }
     }
     public String register(String... params) throws DataAccessException {
-        if (params.length >= 1) {
+        if (params.length == 3) {
+            server.register(new RegisterRequest(params[0],params[1],params[2]));
             state = State.SIGNEDIN;
             visitorName = String.join("-", params);
             return String.format("You signed in as %s", visitorName);
         }
-        throw new DataAccessException(400, "Expected: <yourname>");
+        throw new DataAccessException(400, "Expected: <username> <password> <email>");
     }
     public String login(String... params) throws DataAccessException {
-        if(params.length>=1) {
+        if(params.length==2) {
+            server.login(new LoginRequest(params[0], params[1]));
             state = State.SIGNEDIN;
             visitorName = String.join("-", params);
             return String.format("You logged in as %s", visitorName);
         }
-        throw new DataAccessException(400, "Expected: <yourname>");
+        throw new DataAccessException(400, "Expected: <username> <password>");
     }
 
     public String help() {
         if (state == State.SIGNEDOUT) {
             return """
-                    - signIn <yourname>
+                    - login <username> <password>
+                    - register <username> <password> <email>
                     - quit
                     """;
         }
@@ -75,5 +76,7 @@ public class LoginClient {
             throw new DataAccessException(400, "You must sign in");
         }
     }
+
+
 }
-}
+
