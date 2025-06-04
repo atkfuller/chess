@@ -43,10 +43,12 @@ public class MySqlUserDAO implements UserDAO{
     @Override
     public void createUser(UserData user) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
+            System.out.printf("Creating user: %s, %s, %s%n", user.username(), user.hashedPasword(), user.email());
             var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
             executeUpdate(statement,user.username(), user.hashedPasword(), user.email());
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new DataAccessException(500, String.format("Error: Unable to create user: %s", e.getMessage()));
         }
     }
@@ -89,6 +91,9 @@ public class MySqlUserDAO implements UserDAO{
                     else if (param instanceof String p) ps.setString(i + 1, p);
                     else if (param instanceof String p) ps.setString(i + 1, p);
                     else if (param == null) ps.setNull(i + 1, NULL);
+                    else {
+                        throw new DataAccessException(500, "Error: unsupported parameter type: " + param.getClass());
+                    }
                 }
                 ps.executeUpdate();
 
@@ -100,6 +105,7 @@ public class MySqlUserDAO implements UserDAO{
                 return 0;
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new DataAccessException(500, String.format("Error: Unable to update database: %s", statement, e.getMessage()));
         }
     }

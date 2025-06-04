@@ -50,6 +50,7 @@ public class ServerFacade {
         return this.makeRequestAuth(method, path, null, request, responseClass);
     }
     private <T> T makeRequestAuth(String method, String path, String authToken, Object request, Class<T> responseClass) throws DataAccessException {
+        System.out.println("Connecting to: " + serverUrl + path);
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
