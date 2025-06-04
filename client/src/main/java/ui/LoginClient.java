@@ -2,7 +2,7 @@ package ui;
 import server.ServerFacade;
 import dataaccess.DataAccessException;
 import java.util.Arrays;
-import java.util.zip.DataFormatException;
+
 
 public class LoginClient {
     private String visitorName = null;
