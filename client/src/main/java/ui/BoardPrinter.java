@@ -87,7 +87,7 @@ public class BoardPrinter {
     }
     private static boolean highlightSquare(ChessPosition pos, Collection<ChessMove> moves){
         for(ChessMove move: moves){
-            if(pos==move.getEndPosition()){
+            if(pos.equals(move.getEndPosition())){
                 return true;
             }
         }

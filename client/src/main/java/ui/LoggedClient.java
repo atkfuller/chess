@@ -39,10 +39,7 @@ public class LoggedClient {
                 System.out.println(listGames(params));
                 yield thisPhase();
             }
-            case "play" -> {
-                System.out.println(playGame(params));
-                yield thisPhase();
-            }
+            case "play" -> playGame(params);
             case "observe" -> {
                 System.out.println(observeGame(params));
                 yield thisPhase();
@@ -80,7 +77,7 @@ public class LoggedClient {
         }
         return result.toString();
     }
-    public String playGame(String... params) throws Exception{
+    public ReplPhase playGame(String... params) throws Exception{
         assertSignedIn();
         int index;
         listGames();
@@ -99,7 +96,8 @@ public class LoggedClient {
             String color= params[1].toUpperCase();
             server.joinGame(new JoinGameRequest(authToken, color, gameID));
             displayGame(game, color);
-            return String.format("joined game", allGames.get(Integer.valueOf(params[0])).gameName());
+            System.out.println(String.format("joined game", allGames.get(Integer.valueOf(params[0])).gameName()));
+            return new GameUI(serverUrl, authToken, game, color);
         }
         throw new ClientException(400, "Expected: <number> <color>");
    }

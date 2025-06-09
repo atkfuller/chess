@@ -4,12 +4,13 @@ import chess.*;
 import model.GameData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
-public class GameREPL implements ReplPhase {
+public class GameREPL {
     private final String serverUrl;
     private final String authToken;
     private final GameData game;
@@ -22,37 +23,40 @@ public class GameREPL implements ReplPhase {
         this.playerColor = playerColor.toUpperCase();
     }
 
-    @Override
-    public ReplPhase run() {
-        System.out.println(SET_BG_COLOR_LIGHT_GREY + "You're now playing game: " + game.gameName() + RESET_BG_COLOR);
-        drawBoard(null);
-
-        Scanner scanner = new Scanner(System.in);
+    public ReplPhase eval(String input) {
+        var tokens = input.toLowerCase().split(" ");
+        var cmd = (tokens.length > 0) ? tokens[0] : "help";
+        var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         while (true) {
-            printPrompt();
-            String line = scanner.nextLine();
-            String[] tokens = line.trim().split(" ");
-            String command = tokens[0].toLowerCase();
-
             try {
-                switch (command) {
+                return switch (cmd) {
                     case "move" -> {
                         if (tokens.length != 3) {
                             System.out.println("Usage: move <start> <end>  (e.g. move e2 e4)");
                         } else {
                             makeMove(tokens[1], tokens[2]);
                         }
+                        yield thisPhase();
                     }
-                    case "redraw" -> drawBoard(null);
+                    case "redraw" -> {
+                        drawBoard(null);
+                        yield thisPhase();
+                    }
                     case "leave" -> leaveGame();
-                    case "highlight" ->legalMoves(tokens[1]);
-                    case "exit" -> {
-                        System.out.println("Exiting game.");
-                        return new PostLoginUI(serverUrl, authToken, game.whiteUsername()); // back to lobby
+                    case "highlight" ->{
+                        legalMoves(tokens[1]);
+                        yield thisPhase();
                     }
-                    case "help" -> printHelp();
-                    default -> System.out.println("Unknown command. Type 'help'.");
-                }
+
+                    case "help" ->{
+                        printHelp();
+                        yield thisPhase();
+                    }
+                    default -> {
+                        System.out.println("Unknown command. Type 'help'.");
+                        yield thisPhase();
+                    }
+                };
             } catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());
             }
@@ -99,15 +103,18 @@ public class GameREPL implements ReplPhase {
         System.out.print(SET_TEXT_COLOR_MAGENTA + "\nGAME >>> " + SET_TEXT_COLOR_GREEN);
     }
 
-    private void printHelp() {
+    public void printHelp() {
         System.out.println(SET_TEXT_COLOR_YELLOW + """
                 Available commands:
                 - move <start> <end>       (e.g. move e2 e4)
                 - redraw                   (refresh the board)
-                - resign                   (resign the game)
-                - exit                     (exit to game lobby)
+                - leave                    (leave the game)
+                - highlight <position>      (highlight moves)
                 - help
                 """ + RESET_TEXT_COLOR);
+    }
+    private ReplPhase thisPhase() {
+        return new GameUI(serverUrl,authToken,game,playerColor);
     }
 }
 
