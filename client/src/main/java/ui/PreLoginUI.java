@@ -1,6 +1,7 @@
 package ui;
 
 
+import java.util.Objects;
 import java.util.Scanner;
 
 import static java.awt.Color.BLUE;
@@ -18,7 +19,7 @@ public class PreLoginUI {
     public void run() {
         System.out.println(SET_TEXT_COLOR_WHITE+SET_TEXT_BOLD+BLACK_PAWN+" Welcome to THE CHESS GAME "+BLACK_PAWN+" login to play"+RESET_TEXT_COLOR);
         System.out.print(client.help());
-
+        State state=State.NOT_QUIT;
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
@@ -28,6 +29,10 @@ public class PreLoginUI {
             try {
                 result = client.eval(line);
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
+                if(Objects.equals(result, "")){
+                    break;
+                }
+
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -46,6 +51,9 @@ public class PreLoginUI {
     }
     public void clear() throws Exception {
         client.clear();
+    }
+    public void setState(State state){
+
     }
 
 }

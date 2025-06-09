@@ -2,5 +2,7 @@ package ui;
 
 public enum State {
     SIGNEDOUT,
-    SIGNEDIN
+    SIGNEDIN,
+    QUIT,
+    NOT_QUIT;
 }

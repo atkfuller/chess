@@ -28,7 +28,7 @@ public class LoginClient {
             return switch (cmd) {
                 case "login" -> login(params);
                 case "register" -> register(params);
-                case "quit" -> "quit";
+                case "quit" -> quit();
                 default -> help();
             };
         } catch (Exception ex) {
@@ -44,7 +44,7 @@ public class LoginClient {
             PostLoginUI newUI= new PostLoginUI(serverUrl, result.authToken(), visitorName);
             newUI.run();
             new PreLoginUI(serverUrl).run();
-            return String.format("You signed in as %s", visitorName);
+            return "";
         }
         throw new ClientException(400, "Expected: <username> <password> <email>");
     }
@@ -57,7 +57,7 @@ public class LoginClient {
             PostLoginUI newUI= new PostLoginUI(serverUrl, result.authToken(), visitorName);
             newUI.run();
             new PreLoginUI(serverUrl).run();
-            return String.format("You logged in as %s", visitorName);
+            return "";
         }
         throw new ClientException(400, "Expected: <username> <password>");
     }
@@ -84,6 +84,10 @@ public class LoginClient {
     }
     public void clear() throws Exception {
         server.clear();
+    }
+    public String quit(){
+
+        return "quit";
     }
 
 
