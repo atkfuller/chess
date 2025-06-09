@@ -71,6 +71,16 @@ public class LoggedClient {
     }
     public String playGame(String... params) throws Exception{
         assertSignedIn();
+        int index;
+        try {
+            index = Integer.valueOf(params[0]);
+        } catch (NumberFormatException e) {
+            throw new ClientException(400, "Error: Must be a valid number.");
+        }
+
+        if (index < 0 || index > allGames.size()) {
+            throw new ClientException(400, "Error: Invalid game number.");
+        }
         if(params.length==2) {
             GameData game=allGames.get(Integer.valueOf(params[0]));
             Integer gameID= game.gameID();

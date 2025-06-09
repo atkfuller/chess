@@ -39,7 +39,7 @@ public class LoginClient {
         if (params.length == 3) {
             var result=server.register(new RegisterRequest(params[0],params[1],params[2]));
             state = State.SIGNEDIN;
-            visitorName = String.join("-", params);
+            visitorName = params[0];
             System.out.println(String.format("You signed in as %s", visitorName));
             PostLoginUI newUI= new PostLoginUI(serverUrl, result.authToken(), visitorName);
             newUI.run();
@@ -52,7 +52,7 @@ public class LoginClient {
         if(params.length==2) {
             var result=server.login(new LoginRequest(params[0], params[1]));
             state = State.SIGNEDIN;
-            visitorName = String.join("-", params);
+            visitorName = params[0];
             System.out.println(String.format("You logged in as %s", visitorName));
             PostLoginUI newUI= new PostLoginUI(serverUrl, result.authToken(), visitorName);
             newUI.run();
