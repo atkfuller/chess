@@ -1,5 +1,6 @@
 import chess.*;
 import ui.BoardPrinter;
+import ui.ChessClient;
 import ui.PreLoginUI;
 
 public class Main {
@@ -7,11 +8,7 @@ public class Main {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("♕ 240 Chess Client: " + piece);
         var serverUrl = "http://localhost:8080";
-        if (args.length == 1) {
-            serverUrl = args[0];
-        }
-        PreLoginUI ui= new PreLoginUI(serverUrl);
-        ui.clear();
-        ui.run();
+        ChessClient client= new ChessClient(serverUrl);
+        client.run();
     }
 }

@@ -12,40 +12,51 @@ public class LoggedClient {
     private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
-    private State state = State.SIGNEDOUT;
+    private State state = State.SIGNED_OUT;
     private String authToken=null;
     private Map<Integer, GameData> allGames= new HashMap<>();
 
     public LoggedClient(String serverUrl, String authToken, String name) {
         visitorName= name;
         server = new ServerFacade(serverUrl);
-        state=State.SIGNEDIN;
+        state=State.SIGNED_IN;
         this.serverUrl = serverUrl;
         this.authToken=authToken;
     }
 
-    public String eval(String input) {
-        try {
-            var tokens = input.toLowerCase().split(" ");
-            var cmd = (tokens.length > 0) ? tokens[0] : "help";
-            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            return switch (cmd) {
-                case "logout" -> logout(params);
-                case "create" -> createGame(params);
-                case "list" -> listGames();
-                case "play" -> playGame(params);
-               case "observe" -> observeGame(params);
-                default -> help();
-            };
-        } catch (Exception ex) {
-            return ex.getMessage();
-        }
+    public ReplPhase eval(String input) throws Exception {
+        var tokens = input.toLowerCase().split(" ");
+        var cmd = (tokens.length > 0) ? tokens[0] : "help";
+        var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+
+        return switch (cmd) {
+            case "logout" -> logout();
+            case "create" -> {
+                System.out.println(createGame(params));
+                yield thisPhase();
+            }
+            case "list" -> {
+                System.out.println(listGames(params));
+                yield thisPhase();
+            }
+            case "play" -> {
+                System.out.println(playGame(params));
+                yield thisPhase();
+            }
+            case "observe" -> {
+                System.out.println(observeGame(params));
+                yield thisPhase();
+            }
+            default -> {
+                System.out.println(help());
+                yield thisPhase();
+            }
+        };
     }
-    public String logout(String... params) throws Exception {
-        assertSignedIn();
+    private ReplPhase logout() throws Exception {
         server.logout(new LogoutRequest(authToken));
-        state = State.SIGNEDOUT;
-        return String.format("%s logged out", visitorName);
+        System.out.printf("%s logged out%n", visitorName);
+        return new PreLoginUI(serverUrl);
     }
     public String createGame(String... params) throws Exception {
         assertSignedIn();
@@ -72,6 +83,7 @@ public class LoggedClient {
     public String playGame(String... params) throws Exception{
         assertSignedIn();
         int index;
+        listGames();
         try {
             index = Integer.valueOf(params[0]);
         } catch (NumberFormatException e) {
@@ -103,7 +115,7 @@ public class LoggedClient {
     }
 
     public String help() {
-        if (state == State.SIGNEDOUT) {
+        if (state == State.SIGNED_OUT) {
             return SET_TEXT_COLOR_YELLOW+"""
                     - help
                     - logout
@@ -124,7 +136,7 @@ public class LoggedClient {
     }
 
     private void assertSignedIn() throws ClientException{
-        if (state == State.SIGNEDOUT) {
+        if (state == State.SIGNED_OUT) {
             throw new ClientException(400, "You must sign in");
         }
     }
@@ -138,6 +150,9 @@ public class LoggedClient {
         else{
             BoardPrinter.printBoardBlackView(game.game().getBoard());
         }
+    }
+    private ReplPhase thisPhase() {
+        return new PostLoginUI(serverUrl, authToken, visitorName);
     }
 }
 
