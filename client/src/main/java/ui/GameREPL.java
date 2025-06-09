@@ -3,17 +3,19 @@ package ui;
 import chess.*;
 import model.GameData;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
-public class GameRepl implements ReplPhase {
+public class GameREPL implements ReplPhase {
     private final String serverUrl;
     private final String authToken;
     private final GameData game;
     private final String playerColor;
 
-    public GameRepl(String serverUrl, String authToken, GameData game, String playerColor) {
+    public GameREPL(String serverUrl, String authToken, GameData game, String playerColor) {
         this.serverUrl = serverUrl;
         this.authToken = authToken;
         this.game = game;
@@ -23,7 +25,7 @@ public class GameRepl implements ReplPhase {
     @Override
     public ReplPhase run() {
         System.out.println(SET_BG_COLOR_LIGHT_GREY + "You're now playing game: " + game.gameName() + RESET_BG_COLOR);
-        drawBoard();
+        drawBoard(null);
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -41,8 +43,9 @@ public class GameRepl implements ReplPhase {
                             makeMove(tokens[1], tokens[2]);
                         }
                     }
-                    case "redraw" -> drawBoard();
+                    case "redraw" -> drawBoard(null);
                     case "leave" -> leaveGame();
+                    case "highlight" ->legalMoves(tokens[1]);
                     case "exit" -> {
                         System.out.println("Exiting game.");
                         return new PostLoginUI(serverUrl, authToken, game.whiteUsername()); // back to lobby
@@ -55,18 +58,23 @@ public class GameRepl implements ReplPhase {
             }
         }
     }
+    private void legalMoves(String posStr) throws Exception {
+        ChessPosition position= pos(posStr);
+        Collection<ChessMove> moves=game.game().validMoves(position);
+        drawBoard((ArrayList<ChessMove>) moves);
 
+    }
     private ReplPhase leaveGame() {
         System.out.println("You resigned.");
         return new PostLoginUI(serverUrl, authToken, game.whiteUsername());
 
     }
 
-    private void drawBoard() {
+    private void drawBoard(ArrayList<ChessMove> moves) {
         if ("WHITE".equals(playerColor)) {
-            BoardPrinter.printBoardWhiteView(game.game().getBoard());
+            BoardPrinter.printBoardWhiteView(game.game().getBoard(), moves);
         } else {
-            BoardPrinter.printBoardBlackView(game.game().getBoard());
+            BoardPrinter.printBoardBlackView(game.game().getBoard(), moves);
         }
     }
 
@@ -76,7 +84,7 @@ public class GameRepl implements ReplPhase {
         ChessMove move = new ChessMove(start, end, null); // Add promotion if needed
         game.game().makeMove(move);
         System.out.println("Move made: " + from + " to " + to);
-        drawBoard();
+        drawBoard(null);
     }
 
     private ChessPosition pos(String input) throws Exception {
@@ -88,7 +96,7 @@ public class GameRepl implements ReplPhase {
     }
 
     private void printPrompt() {
-        System.out.print(SET_TEXT_COLOR_CYAN + "\nGAME >>> " + SET_TEXT_COLOR_GREEN);
+        System.out.print(SET_TEXT_COLOR_MAGENTA + "\nGAME >>> " + SET_TEXT_COLOR_GREEN);
     }
 
     private void printHelp() {

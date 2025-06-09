@@ -145,10 +145,10 @@ public class LoggedClient {
     }
     private void displayGame(GameData game, String color){
         if(Objects.equals(color, "WHITE")){
-            BoardPrinter.printBoardWhiteView(game.game().getBoard());
+            BoardPrinter.printBoardWhiteView(game.game().getBoard(),null);
         }
         else{
-            BoardPrinter.printBoardBlackView(game.game().getBoard());
+            BoardPrinter.printBoardBlackView(game.game().getBoard(), null);
         }
     }
     private ReplPhase thisPhase() {

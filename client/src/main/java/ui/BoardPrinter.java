@@ -2,21 +2,24 @@ package ui;
 
 import chess.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import static ui.EscapeSequences.*;
 
 public class BoardPrinter {
 
-    public static void printBoardWhiteView(ChessBoard board) {
+    public static void printBoardWhiteView(ChessBoard board, ArrayList<ChessMove> moves) {
         System.out.println(ERASE_SCREEN);
-        printBoard(board, false);
+        printBoard(board, false, moves);
     }
 
-    public static void printBoardBlackView(ChessBoard board) {
+    public static void printBoardBlackView(ChessBoard board, ArrayList<ChessMove> moves) {
         System.out.println(ERASE_SCREEN);
-        printBoard(board, true);
+        printBoard(board, true, moves);
     }
 
-    private static void printBoard(ChessBoard board, boolean flipped) {
+    private static void printBoard(ChessBoard board, boolean flipped, ArrayList<ChessMove> moves) {
         // Correct column and row label order
         String[] colLabels = flipped
                 ? new String[]{"h", "g", "f", "e", "d", "c", "b", "a"}
@@ -49,7 +52,14 @@ public class BoardPrinter {
                 String fg = (piece != null && piece.getTeamColor() == ChessGame.TeamColor.BLACK)
                         ? SET_TEXT_COLOR_BLACK
                         : SET_TEXT_COLOR_WHITE;
-
+                if (moves != null){
+                    if(pos==moves.getFirst().getStartPosition()){
+                        bg=SET_BG_COLOR_YELLOW;
+                    }
+                    if(highlightSquare(pos, moves)){
+                        bg = isLightSquare ? SET_BG_COLOR_GREEN : SET_BG_COLOR_DARK_GREEN;
+                    }
+                }
                 String symbol = getPieceSymbol(piece);
                 System.out.print(bg + fg + " " + symbol + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
             }
@@ -75,4 +85,13 @@ public class BoardPrinter {
             case PAWN -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_PAWN : BLACK_PAWN;
         };
     }
+    private static boolean highlightSquare(ChessPosition pos, Collection<ChessMove> moves){
+        for(ChessMove move: moves){
+            if(pos==move.getEndPosition()){
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
