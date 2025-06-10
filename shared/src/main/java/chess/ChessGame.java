@@ -105,9 +105,14 @@ public class ChessGame {
         if(moves==null){
             throw new InvalidMoveException("invalid move");
         }
-        if(piece.getTeamColor()!=teamTurn | !moves.contains(move)){
+        if(piece.getTeamColor()!=teamTurn) {
+            throw new InvalidMoveException("not players turn");
+        }
+        if(!moves.contains(move)){
             throw new InvalidMoveException("invalid move");
         }
+
+
         else{
             gameBoard.movePiece(move);
         }

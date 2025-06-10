@@ -34,7 +34,11 @@ public class GameREPL {
                         if (tokens.length != 3) {
                             System.out.println("Usage: move <start> <end>  (e.g. move e2 e4)");
                         } else {
-                            makeMove(tokens[1], tokens[2]);
+                            try {
+                                makeMove(tokens[1], tokens[2]);
+                            }catch(Exception e){
+                                System.out.println("Error making move: " + e.getMessage());
+                            }
                         }
                         yield thisPhase();
                     }
@@ -85,8 +89,12 @@ public class GameREPL {
     private void makeMove(String from, String to) throws Exception {
         ChessPosition start = pos(from);
         ChessPosition end = pos(to);
-        ChessMove move = new ChessMove(start, end, null); // Add promotion if needed
-        game.game().makeMove(move);
+        ChessMove move = new ChessMove(start, end, null);
+        try {// Add promotion if needed
+            game.game().makeMove(move);
+        } catch (InvalidMoveException e) {
+            throw new ClientException(400, String.join("Error", e.getMessage()));
+        }
         System.out.println("Move made: " + from + " to " + to);
         drawBoard(null);
     }

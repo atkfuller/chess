@@ -53,7 +53,7 @@ public class BoardPrinter {
                         ? SET_TEXT_COLOR_BLACK
                         : SET_TEXT_COLOR_WHITE;
                 if (moves != null){
-                    if(pos==moves.getFirst().getStartPosition()){
+                    if(pos.equals(moves.getFirst().getStartPosition())){
                         bg=SET_BG_COLOR_YELLOW;
                     }
                     if(highlightSquare(pos, moves)){
