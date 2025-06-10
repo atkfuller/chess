@@ -32,7 +32,7 @@ public class GameREPL {
                 return switch (cmd) {
                     case "move" -> {
                         if (tokens.length != 3) {
-                            System.out.println("Usage: move <start> <end>  (e.g. move e2 e4)");
+                            System.out.println("Expected: move <start> <end>  (e.g. move e2 e4)");
                         } else {
                             try {
                                 makeMove(tokens[1], tokens[2]);
@@ -48,7 +48,12 @@ public class GameREPL {
                     }
                     case "leave" -> leaveGame();
                     case "highlight" ->{
-                        legalMoves(tokens[1]);
+                        if(tokens.length!=2){
+                            System.out.println("Expected: highlight <position>  (e.g. move e2 e4)");
+                        }
+                        else {
+                            legalMoves(tokens[1]);
+                        }
                         yield thisPhase();
                     }
 
@@ -90,6 +95,17 @@ public class GameREPL {
         ChessPosition start = pos(from);
         ChessPosition end = pos(to);
         ChessMove move = new ChessMove(start, end, null);
+        ChessPiece piece=game.game().getBoard().getPiece(start);
+        String color;
+        if(piece.getTeamColor()== ChessGame.TeamColor.WHITE) {
+            color = "WHITE";
+        }
+        else {
+            color = "BLACK";
+        }
+        if(!color.equals(playerColor)){
+            throw new ClientException(400,"Error: not your piece");
+        }
         try {// Add promotion if needed
             game.game().makeMove(move);
         } catch (InvalidMoveException e) {
@@ -101,7 +117,7 @@ public class GameREPL {
 
     private ChessPosition pos(String input) throws Exception {
         if (input.length() != 2)
-            throw new Exception("Invalid position: " + input);
+            throw new ClientException(400, "Error: Invalid position: " + input);
         int col = input.charAt(0) - 'a' + 1;
         int row = Integer.parseInt(String.valueOf(input.charAt(1)));
         return new ChessPosition(row, col);
