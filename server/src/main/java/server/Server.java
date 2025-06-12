@@ -10,7 +10,7 @@ public class Server {
     private UserServices userService;
     private GameServices gameService;
     private ClearService clearService;
-    private final WebSocketHandler webSocketHandler;
+    private WebSocketHandler webSocketHandler;
 
     public Server(IDAOsProvider provider) {
         UserDAO userDAO = provider.getUserDAO();
