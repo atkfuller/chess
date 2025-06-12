@@ -36,4 +36,8 @@ public class ConnectionManager {
             connections.remove(c.visitorName);
         }
     }
+    public void sendMessage(String vistorName, ServerMessage notification) throws IOException {
+        Connection myConnection=connections.get(vistorName);
+        myConnection.send(notification.toString());
+    }
 }
