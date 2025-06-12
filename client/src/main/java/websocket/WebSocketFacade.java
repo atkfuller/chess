@@ -1,66 +1,100 @@
 package websocket;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
+import model.GameData;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
-import javax.websocket.*;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.concurrent.CountDownLatch;
 
-//need to extend Endpoint for websocket to work properly
-public class WebSocketFacade extends Endpoint {
+public class WebSocketFacade {
+    private final WebSocketClient client = new WebSocketClient();
+    private Session session;
+    private final Gson gson = new Gson();
+    private NotificationHandler listener;
 
-    Session session;
-    NotificationHandler notificationHandler;
+    public WebSocketFacade(String serverUri, NotificationHandler listener) throws Exception {
+        this.listener = listener;
+        client.start();
+        client.connect(new ClientSocket(), new URI(serverUri)).get();
+    }
 
+    public void connect(String authToken, int gameID) throws Exception {
+        UserGameCommand command = new UserGameCommand(
+                UserGameCommand.CommandType.CONNECT,
+                authToken,
+                gameID
+        );
+        send(command);
+    }
 
-    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws DataAccessException {
-        try {
-            url = url.replace("http", "ws");
-            URI socketURI = new URI(url + "/ws");
-            this.notificationHandler = notificationHandler;
+    public void makeMove(String authToken, int gameID, String username, String color, ChessMove move) throws Exception {
+        MakeMoveCommand command = new MakeMoveCommand(
+                UserGameCommand.CommandType.MAKE_MOVE,
+                authToken,
+                gameID,
+                move
+        );
+        send(command);
+    }
 
-            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-            this.session = container.connectToServer(this, socketURI);
+    public void leave(String authToken, int gameID) throws Exception {
+        UserGameCommand command = new UserGameCommand(
+                UserGameCommand.CommandType.LEAVE,
+                authToken,
+                gameID
+        );
+        send(command);
+    }
 
-            //set message handler
-            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
-                @Override
-                public void onMessage(String message) {
-                    ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
-                    notificationHandler.notify(notification);
+    public void resign(String authToken, int gameID) throws Exception {
+        UserGameCommand command = new UserGameCommand(
+                UserGameCommand.CommandType.RESIGN,
+                authToken,
+                gameID
+        );
+        send(command);
+    }
+
+    private void send(UserGameCommand command) throws Exception {
+        if (session != null && session.isOpen()) {
+            session.getRemote().sendString(gson.toJson(command));
+        }
+    }
+
+    private class ClientSocket extends org.eclipse.jetty.websocket.api.WebSocketAdapter {
+        @Override
+        public void onWebSocketConnect(Session sess) {
+            session = sess;
+        }
+
+        @Override
+        public void onWebSocketText(String message) {
+            ServerMessage base = gson.fromJson(message, ServerMessage.class);
+            switch (base.getServerMessageType()) {
+                case ERROR -> {
+                    ErrorMessage error = gson.fromJson(message, ErrorMessage.class);
+                    listener.onError(error.getErrorMessage());
                 }
-            });
-        } catch (DeploymentException | IOException | URISyntaxException ex) {
-            throw new DataAccessException(500, ex.getMessage());
+                case NOTIFICATION -> {
+                    NotifcationMessage note = gson.fromJson(message, NotifcationMessage.class);
+                    listener.onNotification(note.getMessage());
+                }
+                case LOAD_GAME -> {
+                    LoadGameMessage load = gson.fromJson(message, LoadGameMessage.class);
+                    listener.onLoadGame(load.getGame());
+                }
+            }
+        }
+
+        @Override
+        public void onWebSocketError(Throwable cause) {
+            listener.onError("WebSocket error: " + cause.getMessage());
         }
     }
-
-    //Endpoint requires this method, but you don't have to do anything
-    @Override
-    public void onOpen(Session session, EndpointConfig endpointConfig) {
-    }
-
-    public void enterPetShop(String visitorName) throws DataAccessException {
-        try {
-            var action = new UserGameCommand();
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-        } catch (IOException ex) {
-            throw new ResponseException(500, ex.getMessage());
-        }
-    }
-
-    public void leavePetShop(String visitorName) throws ResponseException {
-        try {
-            var action = new Action(Action.Type.EXIT, visitorName);
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-            this.session.close();
-        } catch (IOException ex) {
-            throw new ResponseException(500, ex.getMessage());
-        }
-    }
-
 }

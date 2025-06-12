@@ -20,16 +20,16 @@ public class LoggedClient implements NotificationHandler {
     private State state = State.SIGNED_OUT;
     private String authToken=null;
     private Map<Integer, GameData> allGames= new HashMap<>();
-    private final NotificationHandler notificationHandler;
     private WebSocketFacade ws;
 
-    public LoggedClient(String serverUrl, String authToken, String name) {
+    public LoggedClient(String serverUrl, String authToken, String name) throws Exception {
         visitorName= name;
         server = new ServerFacade(serverUrl);
         state=State.SIGNED_IN;
         this.serverUrl = serverUrl;
         this.authToken=authToken;
-        this.notificationHandler = notificationHandler;
+        this.ws=new WebSocketFacade(serverUrl, this);
+
     }
 
     public ReplPhase eval(String input) throws Exception {
@@ -103,21 +103,21 @@ public class LoggedClient implements NotificationHandler {
             Integer gameID= game.gameID();
             String color= params[1].toUpperCase();
             server.joinGame(new JoinGameRequest(authToken, color, gameID));
-            ws = new WebSocketFacade(serverUrl, notificationHandler);
-            ws.enterPetShop(visitorName);
-            displayGame(game, color);
+            ws.connect(authToken, gameID);
             System.out.println(String.format("joined game", allGames.get(Integer.valueOf(params[0])).gameName()));
             return new GameUI(serverUrl, authToken, game, color);
         }
         throw new ClientException(400, "Expected: <number> <color>");
    }
-    public String observeGame(String... params) throws Exception{
+    public ReplPhase observeGame(String... params) throws Exception{
         if(params.length==2) {
             GameData game=allGames.get(Integer.valueOf(params[0]));
             Integer gameID= game.gameID();
             String color= params[1].toUpperCase();
             displayGame(game, color);
-            return String.format("observe game", allGames.get(Integer.valueOf(params[0])).gameName());
+            ws.connect(authToken, gameID);
+            System.out.print(String.format("observe game", allGames.get(Integer.valueOf(params[0])).gameName()));
+            return new GameUI(serverUrl, authToken, game, color);
         }
         throw new ClientException(400, "Expected: <number> <color>");
     }
@@ -162,9 +162,20 @@ public class LoggedClient implements NotificationHandler {
     private ReplPhase thisPhase() {
         return new PostLoginUI(serverUrl, authToken, visitorName);
     }
-    public void notify(ServerMessage notification) {
-        System.out.println(SET_TEXT_COLOR_RED + notification.getMessage());
-        printPrompt();
+
+    @Override
+    public void onError(String message) {
+        System.out.println("Error: " + message);
+    }
+
+    @Override
+    public void onNotification(String message) {
+        System.out.println("Notification: " + message);
+    }
+
+    @Override
+    public void onLoadGame(GameData game) {
+        System.out.println("Game updated!");
     }
 }
 

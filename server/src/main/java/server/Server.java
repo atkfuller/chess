@@ -32,6 +32,7 @@ public class Server {
             this.userService = new UserServices(userDAO, authDAO, gameDAO);
             this.gameService = new GameServices(authDAO, gameDAO);
             this.clearService = new ClearService(userDAO, authDAO, gameDAO);
+            webSocketHandler=new WebSocketHandler(authDAO, gameDAO);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }

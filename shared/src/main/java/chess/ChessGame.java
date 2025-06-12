@@ -13,10 +13,12 @@ import java.util.Objects;
 public class ChessGame {
     private TeamColor teamTurn;
     private ChessBoard gameBoard;
+    private boolean isOver;
     public ChessGame() {
         gameBoard=new ChessBoard();
         gameBoard.resetBoard();
         teamTurn=TeamColor.WHITE;
+        isOver=false;
     }
     public ChessGame(ChessBoard board, TeamColor color){
         gameBoard= board;
@@ -183,7 +185,9 @@ public class ChessGame {
                 return false;
             }
         }
+        isOver=true;
         return true;
+
     }
 
     /**
@@ -231,4 +235,6 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return gameBoard;
     }
+    public boolean isGameOver(){return isOver;}
+    public void setGameOver(){isOver=true;}
 }

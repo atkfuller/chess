@@ -1,6 +1,6 @@
 package server.websocket;
 
-import chess.ChessMove;
+import chess.*;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
@@ -30,41 +30,44 @@ public class WebSocketHandler {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException {
+    public void onMessage(Session session, String message) throws IOException, DataAccessException {
+        UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         try {
-            UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+
             switch (command.getCommandType()) {
                 case CONNECT -> connect(session, command);
-                case LEAVE -> leave(command);
-                case RESIGN -> resign(command);
+                case LEAVE -> leave(session, command);
+                case RESIGN -> resign(session, command);
                 case MAKE_MOVE -> {
                     MakeMoveCommand moveCommand = new Gson().fromJson(message, MakeMoveCommand.class);
-                    makeMove(moveCommand);
+                    makeMove(session, moveCommand);
                 }
-                default -> connections.sendError(command.getVistorName(), "Invalid command");
+                default -> sendError(session, "error: invalid command");
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            String errorUser = new Gson().fromJson(message, UserGameCommand.class).getVistorName();
-            connections.sendError(errorUser, "Error processing command: " + e.getMessage());
+            sendError(session, "error:"+e.getMessage());
         }
     }
 
     private void connect(Session session, UserGameCommand command) throws IOException, DataAccessException {
-        String username = command.getVistorName();
+       String username=null;
+        try {
+           username = authDAO.getAuth(command.getAuthToken()).username();
+       } catch (Exception e) {
+           sendError(session, "error: not authenticated");
+           return;
+       }
         int gameID = command.getGameID();
-
         GameData game = gameDAO.getGame(gameID);
         if (game == null) {
-            connections.sendError(username, "Game not found.");
+            sendError(session, "error: game not found");
             return;
         }
+        Connection connection = new Connection(username, gameID, session);
+        connections.add(connection);
 
         boolean isPlayer = username.equals(game.whiteUsername()) || username.equals(game.blackUsername());
         String color = username.equals(game.whiteUsername()) ? "WHITE" : username.equals(game.blackUsername()) ? "BLACK" : null;
-
-        Connection connection = new Connection(username, gameID, isPlayer, color, session);
-        connections.add(connection);
 
         connections.sendMessage(username, new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game));
 
@@ -72,8 +75,8 @@ public class WebSocketHandler {
         connections.broadcast(gameID, new NotifcationMessage(ServerMessage.ServerMessageType.NOTIFICATION, joinMsg), username);
     }
 
-    private void leave(UserGameCommand command) throws IOException {
-        String username = command.getVistorName();
+    private void leave(Session session, UserGameCommand command) throws IOException, DataAccessException {
+        String username = authDAO.getAuth(command.getAuthToken()).username();
         int gameID = command.getGameID();
 
         connections.remove(username);
@@ -82,22 +85,47 @@ public class WebSocketHandler {
         connections.broadcast(gameID, new NotifcationMessage(ServerMessage.ServerMessageType.NOTIFICATION, leaveMsg), username);
     }
 
-    private void resign(UserGameCommand command) throws IOException {
-        String username = command.getVistorName();
+    private void resign(Session session, UserGameCommand command) throws IOException, DataAccessException {
+        String username = authDAO.getAuth(command.getAuthToken()).username();
         int gameID = command.getGameID();
-
+        GameData game=gameDAO.getGame(gameID);
+        ChessGame currGame=game.game();
+        boolean isPlayer = username.equals(game.whiteUsername()) || username.equals(game.blackUsername());
+        if(!isPlayer){
+            sendError(session,"error: nonplayer cannot resign");
+        }
+        currGame.setGameOver();
+        gameDAO.updateGame(gameID, currGame);
         String resignMsg = username + " has resigned the game.";
-        connections.broadcast(gameID, new NotifcationMessage(ServerMessage.ServerMessageType.NOTIFICATION, resignMsg), username);
+        connections.broadcastAll(gameID,  new NotifcationMessage(ServerMessage.ServerMessageType.NOTIFICATION, resignMsg));
     }
 
-    private void makeMove(MakeMoveCommand command) throws IOException, DataAccessException {
-        String username = command.getVistorName();
+    private void makeMove(Session session, MakeMoveCommand command) throws IOException, DataAccessException {
+        String username = authDAO.getAuth(command.getAuthToken()).username();
         ChessMove move = command.getMove();
         int gameID = command.getGameID();
-
         GameData game = gameDAO.getGame(gameID);
+        ChessGame currGame=game.game();
+        ChessBoard board= currGame.getBoard();
+        ChessPiece piece= board.getPiece(move.getStartPosition());
         if (game == null) {
-            connections.sendError(username, "Game not found.");
+            sendError(session, "error: game not found");
+            return;
+        }
+        ChessGame.TeamColor playerColor = username.equals(game.whiteUsername()) ? ChessGame.TeamColor.WHITE: username.equals(game.blackUsername()) ? ChessGame.TeamColor.BLACK : null;
+        if(playerColor!=piece.getTeamColor()){
+            sendError(session, "error: cannot move other player piece");
+            return;
+        }
+        if(currGame.isInCheckmate(ChessGame.TeamColor.WHITE)||currGame.isInCheckmate(ChessGame.TeamColor.BLACK)||currGame.isGameOver()){
+            sendError(session, "error: game over or checkmate");
+            return;
+        }
+        try{
+            game.game().makeMove(move);
+            gameDAO.updateGame(gameID,game.game());
+        } catch (InvalidMoveException e) {
+            sendError(session, "error:"+e.getMessage());
             return;
         }
 
@@ -109,5 +137,14 @@ public class WebSocketHandler {
 
         // Reload updated game to all clients
         connections.broadcastAll(gameID, new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game));
+    }
+    public void sendError(Session session, String errorMsg) throws IOException {
+        sendMessage(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, errorMsg));
+    }
+    public void sendMessage(Session session, ServerMessage message) throws IOException {
+        session.getRemote().sendString(messageToJson(message));
+    }
+    private String messageToJson(ServerMessage message) {
+        return new com.google.gson.Gson().toJson(message);
     }
 }
