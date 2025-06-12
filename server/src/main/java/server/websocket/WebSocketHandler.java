@@ -2,12 +2,13 @@ package server.websocket;
 
 import chess.ChessMove;
 import com.google.gson.Gson;
+import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
-import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
+import dataaccess.GameDAO;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
@@ -16,60 +17,97 @@ import websocket.messages.NotifcationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
-import java.util.Timer;
-
 
 @WebSocket
 public class WebSocketHandler {
-
+    private final AuthDAO authDAO;
+    private final GameDAO gameDAO;
     private final ConnectionManager connections = new ConnectionManager();
 
+    public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO) {
+        this.authDAO = authDAO;
+        this.gameDAO = gameDAO;
+    }
+
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, DataAccessException {
-        UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
-        switch (action.getCommandType()) {
-            case CONNECT -> connect(action.getVistorName(), session);
-            case LEAVE -> leave(action.getVistorName());
-            case RESIGN -> resign(action.getVistorName());
-            case MAKE_MOVE -> {
-                MakeMoveCommand moveAction = new Gson().fromJson(message, MakeMoveCommand.class);
-                makeMove(moveAction.getVistorName(), moveAction.getMove());
-            }
-            default -> {
-                ErrorMessage errorMessage= new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Errpr: invlaid command");
-                connections.broadcast(action.getVistorName(), errorMessage);
-            }
-        }
-    }
-
-    private void connect(String visitorName, Session session) throws IOException {
-        connections.add(visitorName, session);
-        var message = String.format("%s has joined the game", visitorName);
-        var notification = new NotifcationMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
-        connections.broadcast(visitorName, notification);
-    }
-
-    private void leave(String visitorName) throws IOException {
-        connections.remove(visitorName);
-        var message = String.format("%s left the shop", visitorName);
-        var notification = new NotifcationMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
-        connections.broadcast(visitorName, notification);
-    }
-    public void resign(String visitorName)throws IOException{
-        connections.remove(visitorName);
-        var message=String.format("%s has resigned the game", visitorName);
-        var notifcation= new NotifcationMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
-        connections.broadcast(visitorName, notifcation);
-    }
-    public void makeMove(String vistorName, ChessMove move) throws DataAccessException {
+    public void onMessage(Session session, String message) throws IOException {
         try {
-            var startPostion= move.getStartPosition();
-            var endPosition= move.getEndPosition();
-            var message = String.format("%s moved to position %s from  %s", vistorName, startPostion.toString(), endPosition.toString());
-            var notification = new NotifcationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-            connections.broadcast("", notification);
-        } catch (Exception ex) {
-            throw new DataAccessException(500, ex.getMessage());
+            UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+            switch (command.getCommandType()) {
+                case CONNECT -> connect(session, command);
+                case LEAVE -> leave(command);
+                case RESIGN -> resign(command);
+                case MAKE_MOVE -> {
+                    MakeMoveCommand moveCommand = new Gson().fromJson(message, MakeMoveCommand.class);
+                    makeMove(moveCommand);
+                }
+                default -> connections.sendError(command.getVistorName(), "Invalid command");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            String errorUser = new Gson().fromJson(message, UserGameCommand.class).getVistorName();
+            connections.sendError(errorUser, "Error processing command: " + e.getMessage());
         }
+    }
+
+    private void connect(Session session, UserGameCommand command) throws IOException, DataAccessException {
+        String username = command.getVistorName();
+        int gameID = command.getGameID();
+
+        GameData game = gameDAO.getGame(gameID);
+        if (game == null) {
+            connections.sendError(username, "Game not found.");
+            return;
+        }
+
+        boolean isPlayer = username.equals(game.whiteUsername()) || username.equals(game.blackUsername());
+        String color = username.equals(game.whiteUsername()) ? "WHITE" : username.equals(game.blackUsername()) ? "BLACK" : null;
+
+        Connection connection = new Connection(username, gameID, isPlayer, color, session);
+        connections.add(connection);
+
+        connections.sendMessage(username, new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game));
+
+        String joinMsg = isPlayer ? username + " joined as " + color : username + " joined as observer";
+        connections.broadcast(gameID, new NotifcationMessage(ServerMessage.ServerMessageType.NOTIFICATION, joinMsg), username);
+    }
+
+    private void leave(UserGameCommand command) throws IOException {
+        String username = command.getVistorName();
+        int gameID = command.getGameID();
+
+        connections.remove(username);
+
+        String leaveMsg = username + " has left the game.";
+        connections.broadcast(gameID, new NotifcationMessage(ServerMessage.ServerMessageType.NOTIFICATION, leaveMsg), username);
+    }
+
+    private void resign(UserGameCommand command) throws IOException {
+        String username = command.getVistorName();
+        int gameID = command.getGameID();
+
+        String resignMsg = username + " has resigned the game.";
+        connections.broadcast(gameID, new NotifcationMessage(ServerMessage.ServerMessageType.NOTIFICATION, resignMsg), username);
+    }
+
+    private void makeMove(MakeMoveCommand command) throws IOException, DataAccessException {
+        String username = command.getVistorName();
+        ChessMove move = command.getMove();
+        int gameID = command.getGameID();
+
+        GameData game = gameDAO.getGame(gameID);
+        if (game == null) {
+            connections.sendError(username, "Game not found.");
+            return;
+        }
+
+        // Normally you'd apply the move to the game here
+
+        String moveMsg = String.format("%s moved from %s to %s", username,
+                move.getStartPosition(), move.getEndPosition());
+        connections.broadcast(gameID, new NotifcationMessage(ServerMessage.ServerMessageType.NOTIFICATION, moveMsg), username);
+
+        // Reload updated game to all clients
+        connections.broadcastAll(gameID, new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game));
     }
 }

@@ -18,9 +18,9 @@ public class UserGameCommand {
 
     private final Integer gameID;
     private final String vistorName;
-    private final ChessGame.TeamColor playerColor;
+    private final String playerColor;
 
-    public UserGameCommand(CommandType commandType, String authToken, Integer gameID, String vistorName, ChessGame.TeamColor playerColor) {
+    public UserGameCommand(CommandType commandType, String authToken, Integer gameID, String vistorName, String playerColor) {
         this.commandType = commandType;
         this.authToken = authToken;
         this.gameID = gameID;
@@ -48,6 +48,7 @@ public class UserGameCommand {
         return gameID;
     }
     public String getVistorName(){return vistorName;}
+    public String getPlayerColor(){return playerColor;}
 
     @Override
     public boolean equals(Object o) {

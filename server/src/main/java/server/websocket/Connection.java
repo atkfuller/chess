@@ -2,17 +2,40 @@ package server.websocket;
 import org.eclipse.jetty.websocket.api.Session;
 
 import java.io.IOException;
+import java.util.Objects;
 
-public class Connection {
-    public String visitorName;
-    public Session session;
-
-    public Connection(String visitorName, Session session) {
-        this.visitorName = visitorName;
-        this.session = session;
+public record Connection(String username, int gameID, boolean isPlayer, String color, Session session){
+    public Session session() {
+        return session;
     }
 
-    public void send(String msg) throws IOException {
-        session.getRemote().sendString(msg);
+    public String username() {
+        return username;
+    }
+
+    public int gameID() {
+        return gameID;
+    }
+
+    public boolean isPlayer() {
+        return isPlayer;
+    }
+
+    public String color() {
+        return color;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Connection that = (Connection) obj;
+        return gameID == that.gameID &&
+                Objects.equals(username, that.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, gameID);
     }
 }

@@ -20,7 +20,7 @@ public class Server {
         this.userService = new UserServices(userDAO, authDAO, gameDAO);
         this.gameService = new GameServices(authDAO, gameDAO);
         this.clearService = new ClearService(userDAO, authDAO, gameDAO);
-        webSocketHandler=new WebSocketHandler();
+        webSocketHandler=new WebSocketHandler(authDAO, gameDAO);
     }
     public Server() {
         try {
