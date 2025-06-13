@@ -2,8 +2,6 @@ package websocket;
 
 import chess.ChessMove;
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
-import model.GameData;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.*;
@@ -36,7 +34,7 @@ public class WebSocketFacade {
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
-            throw new DataAccessException(500, ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
     }
 
@@ -83,33 +81,4 @@ public class WebSocketFacade {
         }
     }
 
-    private class ClientSocket extends org.eclipse.jetty.websocket.api.WebSocketAdapter {
-        public void onWebSocketConnect(Session sess) {
-            session = sess;
-        }
-
-        @Override
-        public void onWebSocketText(String message) {
-            ServerMessage base = gson.fromJson(message, ServerMessage.class);
-            switch (base.getServerMessageType()) {
-                case ERROR -> {
-                    ErrorMessage error = gson.fromJson(message, ErrorMessage.class);
-                    notificationHandler.onError(error.getErrorMessage());
-                }
-                case NOTIFICATION -> {
-                    NotifcationMessage note = gson.fromJson(message, NotifcationMessage.class);
-                    notificationHandler.onNotification(note.getMessage());
-                }
-                case LOAD_GAME -> {
-                    LoadGameMessage load = gson.fromJson(message, LoadGameMessage.class);
-                    notificationHandler.onLoadGame(load.getGame());
-                }
-            }
-        }
-
-        @Override
-        public void onWebSocketError(Throwable cause) {
-            notificationHandler.onError("WebSocket error: " + cause.getMessage());
-        }
-    }
 }
