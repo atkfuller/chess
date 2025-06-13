@@ -21,9 +21,8 @@ public class PostLoginUI implements ReplPhase {
         String result;
 
         while (true) {
-            printPrompt();
+            System.out.print("\n" + SET_TEXT_COLOR_WHITE + "CHESS GAME >>> " + SET_TEXT_COLOR_GREEN);
             String line = scanner.nextLine();
-
             try {
                 return client.eval(line);
             } catch (Throwable e) {
@@ -32,7 +31,4 @@ public class PostLoginUI implements ReplPhase {
         }
     }
 
-    private void printPrompt() {
-        System.out.print("\n" + SET_TEXT_COLOR_WHITE + "CHESS GAME >>> " + SET_TEXT_COLOR_GREEN);
-    }
 }
