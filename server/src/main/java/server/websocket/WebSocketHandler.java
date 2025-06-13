@@ -121,7 +121,9 @@ public class WebSocketHandler {
             sendError(session, "error: game not found");
             return;
         }
-        ChessGame.TeamColor playerColor = username.equals(game.whiteUsername()) ? ChessGame.TeamColor.WHITE: username.equals(game.blackUsername()) ? ChessGame.TeamColor.BLACK : null;
+        ChessGame.TeamColor playerColor = username.equals(game.whiteUsername())
+                ? ChessGame.TeamColor.WHITE: username.equals(game.blackUsername())
+                ? ChessGame.TeamColor.BLACK : null;
         if(playerColor!=piece.getTeamColor()){
             sendError(session, "error: cannot move other player piece");
             return;

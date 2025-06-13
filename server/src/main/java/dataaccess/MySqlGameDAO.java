@@ -80,12 +80,7 @@ public class MySqlGameDAO implements GameDAO{
                         if (rs.next()) {
                             String white = rs.getString("whiteUsername");
                             String black = rs.getString("blackUsername");
-
-                            if ("WHITE".equalsIgnoreCase(color) && white != null && username!=null) {
-                                throw new DataAccessException(403, "Error: White player already assigned.");
-                            } else if ("BLACK".equalsIgnoreCase(color) && black != null && username!=null) {
-                                throw new DataAccessException(403, "Error: Black player already assigned.");
-                            }
+                            alreadyAssignedCheck(color, username, white, black);
                         } else {
                             throw new DataAccessException(404, "Error : Game not found.");
                         }
@@ -103,6 +98,14 @@ public class MySqlGameDAO implements GameDAO{
                 throw new DataAccessException(500, String.format("Error: Unable to join game: %s", e.getMessage()));
             }
         }
+
+    private static void alreadyAssignedCheck(String color, String username, String white, String black) throws DataAccessException {
+        if ("WHITE".equalsIgnoreCase(color) && white != null && username !=null) {
+            throw new DataAccessException(403, "Error: White player already assigned.");
+        } else if ("BLACK".equalsIgnoreCase(color) && black != null && username !=null) {
+            throw new DataAccessException(403, "Error: Black player already assigned.");
+        }
+    }
 
 
     @Override

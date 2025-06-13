@@ -40,13 +40,7 @@ public class PawnMove implements MovesCalculator {
                 if (myPosition.getRow() == startRow) {
                     row = row + rowIncr;
                     newPosition = new ChessPosition(row, col);
-                    if (board.insideBoard(newPosition) && board.getPiece(newPosition) == null) {
-                        if (newPosition.getRow() == endRow) {
-                            moves.addAll(promotePawn(board, myPosition, newPosition, true));
-                        } else {
-                            moves.addAll(promotePawn(board, myPosition, newPosition, false));
-                        }
-                    }
+                    addMove(board, myPosition, endRow, newPosition, moves);
                 }
             }
         //diagonally left
@@ -60,17 +54,21 @@ public class PawnMove implements MovesCalculator {
         return moves;
     }
 
-    private void pawnTakeCalc(ChessBoard board, ChessPosition myPosition, int endRow, int row, int col, ChessPiece myPiece, Collection<ChessMove> moves) {
-        ChessPosition newPosition;
-        newPosition= new ChessPosition(row, col);
-        if(board.insideBoard(newPosition) && board.getPiece(newPosition)!=null&& board.getPiece(newPosition).getTeamColor()!= myPiece.getTeamColor()){
-            if(newPosition.getRow()== endRow) {
+    private void addMove(ChessBoard board, ChessPosition myPosition, int endRow, ChessPosition newPosition, Collection<ChessMove> moves) {
+        if (board.insideBoard(newPosition) && board.getPiece(newPosition) == null) {
+            if (newPosition.getRow() == endRow) {
                 moves.addAll(promotePawn(board, myPosition, newPosition, true));
-            }
-            else{
+            } else {
                 moves.addAll(promotePawn(board, myPosition, newPosition, false));
             }
         }
+    }
+
+    private void pawnTakeCalc(ChessBoard board, ChessPosition myPosition, int endRow,
+                              int row, int col, ChessPiece myPiece, Collection<ChessMove> moves) {
+        ChessPosition newPosition;
+        newPosition= new ChessPosition(row, col);
+        addMove(board, myPosition, endRow, newPosition,moves);
     }
 
     private Collection<ChessMove> promotePawn(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition, boolean promote) {

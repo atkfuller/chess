@@ -79,7 +79,8 @@ public class LoggedClient implements NotificationHandler {
         Integer key=1;
         for (var game : games) {
             addToGames(key, game);
-            String gameline=String.format("%d) Game name: %s Players(white, black): %s, %s", key,game.gameName(), game.whiteUsername(), game.blackUsername());
+            String gameline=String.format("%d) Game name: %s Players(white, black): %s, %s", key,game.gameName(),
+                    game.whiteUsername(), game.blackUsername());
             result.append(gson.toJson(gameline)).append('\n');
             key++;
         }
