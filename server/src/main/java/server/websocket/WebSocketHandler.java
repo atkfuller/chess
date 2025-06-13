@@ -68,7 +68,6 @@ public class WebSocketHandler {
 
         boolean isPlayer = username.equals(game.whiteUsername()) || username.equals(game.blackUsername());
         String color = username.equals(game.whiteUsername()) ? "WHITE" : username.equals(game.blackUsername()) ? "BLACK" : null;
-
         connections.sendMessage(username, new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game));
 
         String joinMsg = isPlayer ? username + " joined as " + color : username + " joined as observer";
@@ -78,11 +77,16 @@ public class WebSocketHandler {
     private void leave(Session session, UserGameCommand command) throws IOException, DataAccessException {
         String username = authDAO.getAuth(command.getAuthToken()).username();
         int gameID = command.getGameID();
-
-        connections.remove(username);
+        GameData game=gameDAO.getGame(gameID);
+        ChessGame currGame=game.game();
+        String color = username.equals(game.whiteUsername()) ? "WHITE" : username.equals(game.blackUsername()) ? "BLACK" : null;
+        if(color!=null) {
+            gameDAO.joinGame(color, game, null);
+        }
 
         String leaveMsg = username + " has left the game.";
         connections.broadcast(gameID, new NotifcationMessage(ServerMessage.ServerMessageType.NOTIFICATION, leaveMsg), username);
+        connections.remove(username);
     }
 
     private void resign(Session session, UserGameCommand command) throws IOException, DataAccessException {
@@ -93,6 +97,11 @@ public class WebSocketHandler {
         boolean isPlayer = username.equals(game.whiteUsername()) || username.equals(game.blackUsername());
         if(!isPlayer){
             sendError(session,"error: nonplayer cannot resign");
+            return;
+        }
+        if(currGame.isGameOver()){
+            sendError(session,"error: already game over");
+            return;
         }
         currGame.setGameOver();
         gameDAO.updateGame(gameID, currGame);

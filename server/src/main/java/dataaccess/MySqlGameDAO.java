@@ -81,9 +81,9 @@ public class MySqlGameDAO implements GameDAO{
                             String white = rs.getString("whiteUsername");
                             String black = rs.getString("blackUsername");
 
-                            if ("WHITE".equalsIgnoreCase(color) && white != null) {
+                            if ("WHITE".equalsIgnoreCase(color) && white != null && username!=null) {
                                 throw new DataAccessException(403, "Error: White player already assigned.");
-                            } else if ("BLACK".equalsIgnoreCase(color) && black != null) {
+                            } else if ("BLACK".equalsIgnoreCase(color) && black != null && username!=null) {
                                 throw new DataAccessException(403, "Error: Black player already assigned.");
                             }
                         } else {
