@@ -68,7 +68,14 @@ public class PawnMove implements MovesCalculator {
                               int row, int col, ChessPiece myPiece, Collection<ChessMove> moves) {
         ChessPosition newPosition;
         newPosition= new ChessPosition(row, col);
-        addMove(board, myPosition, endRow, newPosition,moves);
+        if(board.insideBoard(newPosition) && board.getPiece(newPosition)!=null&& board.getPiece(newPosition).getTeamColor()!= myPiece.getTeamColor()){
+            if(newPosition.getRow()== endRow) {
+                moves.addAll(promotePawn(board, myPosition, newPosition, true));
+            }
+            else{
+                moves.addAll(promotePawn(board, myPosition, newPosition, false));
+            }
+        }
     }
 
     private Collection<ChessMove> promotePawn(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition, boolean promote) {
