@@ -11,25 +11,6 @@ public class KnightMove implements MovesCalculator{
                 {-2, -1}, {-2, +1}, {-1, -2}, {-1, +2},
                 {+1, -2}, {+1, +2}, {+2, -1}, {+2, +1}
         };
-        int row = myPosition.getRow();
-        int col = myPosition.getColumn();
-        for (int[] dir : directions) {
-            int r = row + dir[0];
-            int c = col + dir[1];
-            ChessPosition newPosition = new ChessPosition(r, c);
-            if(board.insideBoard(newPosition)) {
-                if (board.getPiece(newPosition) == null) {
-                    ChessMove move = new ChessMove(myPosition, newPosition, null);
-                    moves.add(move);
-                } else {
-                    ChessPiece myPiece=board.getPiece(myPosition);
-                    if(board.getPiece(newPosition).getTeamColor()!=myPiece.getTeamColor()){
-                        ChessMove move=new ChessMove(myPosition, newPosition, null);
-                        moves.add(move);
-                    }
-                }
-            }
-        }
-        return moves;
+        return MoveChecker.oneSpaceCalc(myPosition, directions, board);
     }
 }

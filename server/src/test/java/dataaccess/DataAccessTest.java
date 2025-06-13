@@ -10,18 +10,12 @@ import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import server.IDAOsProvider;
 import server.MemoryDAOsProvider;
 import server.MySqlDAOsProvider;
 
-import javax.xml.crypto.Data;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class DataAccessTest {
 
@@ -151,7 +145,7 @@ class DataAccessTest {
     }
     @ParameterizedTest
     @ValueSource(classes = {MySqlDAOsProvider.class})
-    void NegCreateGame(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
+    void negCreateGame(Class<? extends IDAOsProvider> dbClass) throws DataAccessException {
         GameDAO gameDAO = getGameDAO(dbClass);
         gameDAO.clear();
         int id = gameDAO.createGame("game1").gameID();
