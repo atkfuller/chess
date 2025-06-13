@@ -48,7 +48,6 @@ public class MySqlUserDAO implements UserDAO{
             executeUpdate(statement,user.username(), user.hashedPasword(), user.email());
 
         } catch (Exception e) {
-            e.printStackTrace();
             throw new DataAccessException(500, String.format("Error: Unable to create user: %s", e.getMessage()));
         }
     }
@@ -105,7 +104,6 @@ public class MySqlUserDAO implements UserDAO{
                 return 0;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new DataAccessException(500, String.format("Error: Unable to update database: %s", statement, e.getMessage()));
         }
     }
