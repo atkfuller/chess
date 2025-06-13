@@ -20,8 +20,8 @@ public record Connection(String username, int gameID, Session session){
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) {return true;}
+        if (obj == null || getClass() != obj.getClass()) {return false;}
         Connection that = (Connection) obj;
         return gameID == that.gameID &&
                 Objects.equals(username, that.username);

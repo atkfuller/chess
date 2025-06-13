@@ -1,9 +1,11 @@
-package chess;
+package chess.moves;
+
+import chess.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class PawnMove implements MovesCalculator{
+public class PawnMove implements MovesCalculator {
     @java.lang.Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves;
@@ -50,28 +52,27 @@ public class PawnMove implements MovesCalculator{
         //diagonally left
         row=myPosition.getRow()+rowIncr;
         col=myPosition.getColumn()-1;
-        newPosition= new ChessPosition(row,col);
-        if(board.insideBoard(newPosition) && board.getPiece(newPosition)!=null&& board.getPiece(newPosition).getTeamColor()!=myPiece.getTeamColor()){
-            if(newPosition.getRow()==endRow) {
-                moves.addAll(promotePawn(board, myPosition, newPosition, true));
-            }
-            else{
-                moves.addAll(promotePawn(board, myPosition, newPosition, false));
-            }
-        }
+        pawnTakeCalc(board, myPosition, endRow, row, col, myPiece, moves);
         //diagonally right
         col=myPosition.getColumn()+1;
         newPosition= new ChessPosition(row,col);
-        if(board.insideBoard(newPosition) && board.getPiece(newPosition)!=null&&  board.getPiece(newPosition).getTeamColor()!=myPiece.getTeamColor()){
-            if(newPosition.getRow()==endRow) {
+        pawnTakeCalc(board, myPosition, endRow, row, col, myPiece, moves);
+        return moves;
+    }
+
+    private void pawnTakeCalc(ChessBoard board, ChessPosition myPosition, int endRow, int row, int col, ChessPiece myPiece, Collection<ChessMove> moves) {
+        ChessPosition newPosition;
+        newPosition= new ChessPosition(row, col);
+        if(board.insideBoard(newPosition) && board.getPiece(newPosition)!=null&& board.getPiece(newPosition).getTeamColor()!= myPiece.getTeamColor()){
+            if(newPosition.getRow()== endRow) {
                 moves.addAll(promotePawn(board, myPosition, newPosition, true));
             }
             else{
                 moves.addAll(promotePawn(board, myPosition, newPosition, false));
             }
         }
-        return moves;
     }
+
     private Collection<ChessMove> promotePawn(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition, boolean promote) {
         Collection<ChessMove> moves= new ArrayList<>();
         if(promote) {

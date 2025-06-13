@@ -21,9 +21,6 @@ public class ConnectionManager {
         userConnections.remove(username);
     }
 
-    public void removeBySession(Session session) {
-        userConnections.entrySet().removeIf(entry -> entry.getValue().session().equals(session));
-    }
 
     public Connection get(String username) {
         return userConnections.get(username);

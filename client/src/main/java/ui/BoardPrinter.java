@@ -75,7 +75,7 @@ public class BoardPrinter {
     }
 
     private static String getPieceSymbol(ChessPiece piece) {
-        if (piece == null) return "   ";
+        if (piece == null) {return "   ";}
         return switch (piece.getPieceType()) {
             case KING -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_KING : BLACK_KING;
             case QUEEN -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_QUEEN : BLACK_QUEEN;

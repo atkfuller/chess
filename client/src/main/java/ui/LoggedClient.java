@@ -163,19 +163,11 @@ public class LoggedClient implements NotificationHandler {
         return new PostLoginUI(serverUrl, authToken, visitorName);
     }
 
-    @Override
-    public void onError(String message) {
-        System.out.println("Error: " + message);
-    }
 
     @Override
     public void onNotification(String message) {
         System.out.println("Notification: " + message);
     }
 
-    @Override
-    public void onLoadGame(GameData game) {
-        System.out.println("Game updated!");
-    }
 }
 

@@ -28,29 +28,18 @@ public class PreLoginUI implements ReplPhase {
         while (!result.equals("quit")) {
             printPrompt();
             String line = scanner.nextLine();
-
             try {
-                var nextPhase = client.eval(line);
-                if (nextPhase == null) {
-                    return null;
-                }
-                if (nextPhase != null) return nextPhase;
+                return client.eval(line);
             } catch (Throwable e) {
-                System.out.println(SET_TEXT_COLOR_RED + e.getMessage() + RESET_TEXT_COLOR);
-            }
+            System.out.println(SET_TEXT_COLOR_RED + e.getMessage() + RESET_TEXT_COLOR);
+        }
         }
         return null;
     }
-
     private void printPrompt() {
         System.out.print("\n" + "CHESS GAME" + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 }
 
-
-//    public void notify(Notification notification) {
-//        System.out.println(RED + notification.message());
-//        printPrompt();
-//    }
 
 

@@ -116,8 +116,9 @@ public class GameREPL {
     }
 
     private ChessPosition pos(String input) throws Exception {
-        if (input.length() != 2)
+        if (input.length() != 2) {
             throw new ClientException(400, "Error: Invalid position: " + input);
+        }
         int col = input.charAt(0) - 'a' + 1;
         int row = Integer.parseInt(String.valueOf(input.charAt(1)));
         return new ChessPosition(row, col);

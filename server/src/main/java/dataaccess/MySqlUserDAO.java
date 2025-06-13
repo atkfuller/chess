@@ -69,43 +69,11 @@ public class MySqlUserDAO implements UserDAO{
         }
     }
     private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(500, String.format("Error: Unable to make database: %s", ex.getMessage()));
-        }
+        ConfigureDatabase.configureDatabase(createStatements);
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (var i = 0; i < params.length; i++) {
-                    var param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param == null) ps.setNull(i + 1, NULL);
-                    else {
-                        throw new DataAccessException(500, "Error: unsupported parameter type: " + param.getClass());
-                    }
-                }
-                ps.executeUpdate();
-
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-
-                return 0;
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(500, String.format("Error: Unable to update database: %s", statement, e.getMessage()));
-        }
+        return ConfigureDatabase.executeUpdate(statement, params);
     }
     private UserData readUser(ResultSet rs) throws SQLException {
         var username= rs.getString("username");
