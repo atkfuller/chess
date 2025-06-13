@@ -25,8 +25,7 @@ public class PostLoginUI implements ReplPhase {
             String line = scanner.nextLine();
 
             try {
-                ReplPhase next = client.eval(line);
-                if (next != null) {return next;}
+                return client.eval(line);
             } catch (Throwable e) {
                 System.out.println(SET_TEXT_COLOR_RED + e.getMessage() + RESET_TEXT_COLOR);
             }
