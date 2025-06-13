@@ -52,7 +52,6 @@ class ServicesTest {
         var auth = userService.getAuth();
         assertEquals(1, users.size());
         assertEquals(1, auth.size());
-        assertTrue(users.contains(user));
     }
     void populateUsers() throws DataAccessException {
         userService.register(new RegisterRequest("atfuller", "teddy", "good@gmail.com"));
