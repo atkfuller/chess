@@ -29,48 +29,52 @@ public class GameREPL {
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         while (true) {
             try {
-                return switch (cmd) {
-                    case "move" -> {
-                        if (tokens.length != 3) {
-                            System.out.println("Expected: move <start> <end>  (e.g. move e2 e4)");
-                        } else {
-                            try {
-                                makeMove(tokens[1], tokens[2]);
-                            }catch(Exception e){
-                                System.out.println("Error making move: " + e.getMessage());
-                            }
-                        }
-                        yield thisPhase();
-                    }
-                    case "redraw" -> {
-                        drawBoard(null);
-                        yield thisPhase();
-                    }
-                    case "leave" -> leaveGame();
-                    case "highlight" ->{
-                        if(tokens.length!=2){
-                            System.out.println("Expected: highlight <position>  (e.g. move e2 e4)");
-                        }
-                        else {
-                            legalMoves(tokens[1]);
-                        }
-                        yield thisPhase();
-                    }
-
-                    case "help" ->{
-                        printHelp();
-                        yield thisPhase();
-                    }
-                    default -> {
-                        System.out.println("Unknown command. Type 'help'.");
-                        yield thisPhase();
-                    }
-                };
+                return getReplPhase(cmd, tokens);
             } catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());
             }
         }
     }
+
+    private ReplPhase getReplPhase(String cmd, String[] tokens) throws Exception {
+        return switch (cmd) {
+            case "move" -> {
+                if (tokens.length != 3) {
+                    System.out.println("Expected: move <start> <end>  (e.g. move e2 e4)");
+                } else {
+                    try {
+                        makeMove(tokens[1], tokens[2]);
+                    } catch (Exception e) {
+                        System.out.println("Error making move: " + e.getMessage());
+                    }
+                }
+                yield thisPhase();
+            }
+            case "redraw" -> {
+                drawBoard(null);
+                yield thisPhase();
+            }
+            case "leave" -> leaveGame();
+            case "highlight" -> {
+                if (tokens.length != 2) {
+                    System.out.println("Expected: highlight <position>  (e.g. move e2 e4)");
+                } else {
+                    legalMoves(tokens[1]);
+                }
+                yield thisPhase();
+            }
+
+            case "help" -> {
+                printHelp();
+                yield thisPhase();
+            }
+            default -> {
+                System.out.println("Unknown command. Type 'help'.");
+                yield thisPhase();
+            }
+        };
+    }
+
     private void legalMoves(String posStr) throws Exception {
         ChessPosition position= pos(posStr);
         Collection<ChessMove> moves=game.game().validMoves(position);
