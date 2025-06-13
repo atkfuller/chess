@@ -32,15 +32,13 @@ public class PawnMove implements MovesCalculator {
         int col=myPosition.getColumn();
         ChessPosition newPosition= new ChessPosition(row,col);
         if(board.insideBoard(newPosition) && board.getPiece(newPosition)==null) {
-                if (newPosition.getRow() == endRow) {
-                    moves.addAll(promotePawn(board, myPosition, newPosition, true));
-                } else {
-                    moves.addAll(promotePawn(board, myPosition, newPosition, false));
-                }
-                if (myPosition.getRow() == startRow) {
+            promotionCheck(board, myPosition, endRow, moves, newPosition);
+            if (myPosition.getRow() == startRow) {
                     row = row + rowIncr;
                     newPosition = new ChessPosition(row, col);
-                    addMove(board, myPosition, endRow, newPosition, moves);
+                    if (board.insideBoard(newPosition) && board.getPiece(newPosition) == null) {
+                        promotionCheck(board, myPosition, endRow, moves, newPosition);
+                    }
                 }
             }
         //diagonally left
@@ -54,27 +52,21 @@ public class PawnMove implements MovesCalculator {
         return moves;
     }
 
-    private void addMove(ChessBoard board, ChessPosition myPosition, int endRow, ChessPosition newPosition, Collection<ChessMove> moves) {
-        if (board.insideBoard(newPosition) && board.getPiece(newPosition) == null) {
-            if (newPosition.getRow() == endRow) {
-                moves.addAll(promotePawn(board, myPosition, newPosition, true));
-            } else {
-                moves.addAll(promotePawn(board, myPosition, newPosition, false));
-            }
-        }
-    }
-
     private void pawnTakeCalc(ChessBoard board, ChessPosition myPosition, int endRow,
                               int row, int col, ChessPiece myPiece, Collection<ChessMove> moves) {
         ChessPosition newPosition;
         newPosition= new ChessPosition(row, col);
         if(board.insideBoard(newPosition) && board.getPiece(newPosition)!=null&& board.getPiece(newPosition).getTeamColor()!= myPiece.getTeamColor()){
-            if(newPosition.getRow()== endRow) {
-                moves.addAll(promotePawn(board, myPosition, newPosition, true));
-            }
-            else{
-                moves.addAll(promotePawn(board, myPosition, newPosition, false));
-            }
+            promotionCheck(board, myPosition, endRow, moves, newPosition);
+        }
+    }
+
+    private void promotionCheck(ChessBoard board, ChessPosition myPosition, int endRow, Collection<ChessMove> moves, ChessPosition newPosition) {
+        if(newPosition.getRow()== endRow) {
+            moves.addAll(promotePawn(board, myPosition, newPosition, true));
+        }
+        else{
+            moves.addAll(promotePawn(board, myPosition, newPosition, false));
         }
     }
 
