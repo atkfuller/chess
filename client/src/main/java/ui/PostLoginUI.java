@@ -8,7 +8,7 @@ import static ui.EscapeSequences.*;
 public class PostLoginUI implements ReplPhase {
     private final LoggedClient client;
 
-    public PostLoginUI(String serverUrl, String authToken, String name) {
+    public PostLoginUI(String serverUrl, String authToken, String name) throws Exception {
         this.client = new LoggedClient(serverUrl, authToken, name);
     }
 

@@ -159,7 +159,7 @@ public class LoggedClient implements NotificationHandler {
             BoardPrinter.printBoardBlackView(game.game().getBoard(), null);
         }
     }
-    private ReplPhase thisPhase() {
+    private ReplPhase thisPhase() throws Exception {
         return new PostLoginUI(serverUrl, authToken, visitorName);
     }
 

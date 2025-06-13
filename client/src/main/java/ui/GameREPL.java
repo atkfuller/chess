@@ -77,7 +77,7 @@ public class GameREPL {
         drawBoard((ArrayList<ChessMove>) moves);
 
     }
-    private ReplPhase leaveGame() {
+    private ReplPhase leaveGame() throws Exception {
         System.out.println("You resigned.");
         return new PostLoginUI(serverUrl, authToken, game.whiteUsername());
 
